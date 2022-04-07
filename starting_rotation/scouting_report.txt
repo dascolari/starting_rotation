@@ -1,0 +1,45 @@
+  
+
+data is from here: http://inalitic.com/datasets/mlb%20pitch%20data.html
+
+built from here: https://www.kaggle.com/datasets/pschale/mlb-pitch-data-20152018
+
+detailed info on the data: https://docs.google.com/document/d/1ztD20pt5K0HUi2EcJHT4SYdOZw9YPYhtLUmi8BpInuA/edit?pref=2&pli=1#heading=h.mnao9thv84r1
+
+Each observation is a pitch with an at bat identifier. 
+pitcher and batter ids will need to be merged on (but i think this is relatively easy given the good gaggle data available). 
+
+basically everything we need and way more is just there
+velo
+location
+tipe
+spin stuff(rate, direction, break, etc)
+game situation (puts inning runners on etc)
+
+our tasks
+1. a model(s) that predicts (pitch type, xlocation, zlocation)
+ - "nested" conditional probability models (what we've been doing but 3 of them that build on each other)
+ - or just three separate models that predict the three coords independently	
+2. cluster types of at bats
+ - usually certain counts, number of outs, situations are labeled as: 
+	hitters count, bunt situation, rbi situation ect. 
+ - let's see if we can identify clusters as such
+ 
+3. corollaries of our pitch predictor
+ - perhaps certain pitchers will have higher rmse (or other modelperformance measure) than others. 
+ - aka some pitchers are more predictable than others
+ - does this coincide with who we think are the best pitchers in the league?
+ - are there any pitchers who we know what they're throwing (Uroldis chapman's fastball) but hitters still can't touch them 
+ - "scouting reports"
+	x pitcher always throws pitch-y after pitch-x
+
+4. predict good time to steal for runner on first base to steal
+ - trying to predict low pitch speed, high break, low pitch location 
+ - good time to steal
+ - perhaps can also look at pickoffs
+ - this might just be part of our main pitch predictor model
+
+5. some sick graphs
+ - strike zones
+ - graphics that show game situations
+
