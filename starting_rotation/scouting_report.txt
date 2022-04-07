@@ -1,6 +1,6 @@
-  
-
 data is from here: http://inalitic.com/datasets/mlb%20pitch%20data.html
+
+pitchers data dropbox: https://www.dropbox.com/s/9gyz3ujwx7jsh5j/pitches.zip?dl=0
 
 built from here: https://www.kaggle.com/datasets/pschale/mlb-pitch-data-20152018
 
@@ -42,4 +42,11 @@ our tasks
 5. some sick graphs
  - strike zones
  - graphics that show game situations
+
+initial tasks
+ - try to bucket some of the less frequent pitches
+ - probably subset by pitcher
+ - build an initial run of the model based on any features that we have
+	- only use pitch information from the previous pitch
+	- OK to use game situation of current pitch
 
