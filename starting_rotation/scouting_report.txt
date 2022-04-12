@@ -1,3 +1,10 @@
+
+data folder: 
+Due to the size of datasets in this folder, we gitignore all .csv files
+archive.zip is in our repository holds some of the data
+download pitches.zip from one of the below links to get pitches data
+
+
 data is from here: http://inalitic.com/datasets/mlb%20pitch%20data.html
 
 pitchers data dropbox: https://www.dropbox.com/s/9gyz3ujwx7jsh5j/pitches.zip?dl=0

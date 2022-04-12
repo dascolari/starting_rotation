@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+*.csv
+*.DS_store
+pitches.zip
+
