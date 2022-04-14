@@ -13,6 +13,8 @@ built from here: https://www.kaggle.com/datasets/pschale/mlb-pitch-data-20152018
 
 detailed info on the data: https://docs.google.com/document/d/1ztD20pt5K0HUi2EcJHT4SYdOZw9YPYhtLUmi8BpInuA/edit?pref=2&pli=1#heading=h.mnao9thv84r1
 
+Hitting Data: https://www.baseball-reference.com/leagues/majors/2015-standard-batting.shtml?sr&utm_source=direct&utm_medium=Share&utm_campaign=ShareTool#players_standard_batting
+
 Each observation is a pitch with an at bat identifier. 
 pitcher and batter ids will need to be merged on (but i think this is relatively easy given the good gaggle data available). 
 

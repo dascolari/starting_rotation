@@ -23,7 +23,7 @@ pitchesabs2015 = merge(x = pitches2015, y = atbats)
 # Arrieta 453562
 
 pitches_pitcher_2015 <- pitchesabs2015 %>% 
-  filter(pitcher_id == 453562)
+  filter(pitcher_id == 547973)
 
 pitches_pitcher_2015$pitch_type <- as.factor(pitches_pitcher_2015$pitch_type)
 
@@ -84,6 +84,7 @@ nrow(pitcher_test)
 ###
 # Redo with a different pitcher
 ###
+# Samardzjia 502188 Kershaw 477132
 
 pitches2015 <- pitches %>% 
   filter(ab_id < 2016000000) 
@@ -93,9 +94,9 @@ pitchesabs2015 = merge(x = pitches2015, y = atbats)
 ## Enter pitcher ID here
 
 pitches_pitcher_2015 <- pitchesabs2015 %>% 
-  filter(pitcher_id == 477132)
+  filter(pitcher_id == 664285)
 
-pitches_pitcher_2015$pitch_type <- as.factor(pitches_pitcher_2015$pitch_type) 
+# pitches_pitcher_2015$pitch_type <- as.factor(pitches_pitcher_2015$pitch_type) 
 
 
 ## Train / Test
@@ -137,7 +138,7 @@ nrow(pitcher_test)
 
 # For Kershaw, this is better than Arrieta
 
-pitch.forest = randomForest(pitch_type ~ b_score + b_count + s_count + outs + pitch_num + on_1b + on_2b + on_3b + first_pitch + prev_pitch + prev_pitch_AB + prev_pitch_CH + prev_pitch_CU + prev_pitch_EP + prev_pitch_FA + prev_pitch_FC + prev_pitch_FF, 
+pitch.forest = randomForest(pitch_type ~ b_score + b_count + s_count + outs + pitch_num + on_1b + on_2b + on_3b + first_pitch + prev_pitch_CH + prev_pitch_CU + prev_pitch_EP + prev_pitch_FA + prev_pitch_FC + prev_pitch_FF, 
                             data=pitcher_train, na.action=na.omit)
 
 pitcher_test = pitcher_test %>% 
@@ -199,3 +200,53 @@ nrow(pitcher_test)
 xtabs(~pitch_type + pitch_pred_K5, data=pitcher_test) %>% diag %>% sum
 xtabs(~pitch_type + pitch_pred_K15, data=pitcher_test) %>% diag %>% sum
 xtabs(~pitch_type + pitch_pred_K25, data=pitcher_test) %>% diag %>% sum
+
+###
+# Naive Bayes
+###
+
+library(naivebayes)
+
+pitches2015 <- pitches %>% 
+  filter(ab_id < 2016000000) 
+
+pitchesabs2015 = merge(x = pitches2015, y = atbats)
+
+## Enter pitcher ID here
+# Arrieta 453562
+
+pitches_pitcher_2015 <- pitchesabs2015 %>% 
+  filter(pitcher_id == 453562) %>% 
+  select(pitch_type, b_score, b_count, s_count, outs, pitch_num, on_1b, on_2b, on_3b, first_pitch, prev_pitch_AB, prev_pitch_CH, prev_pitch_CU, prev_pitch_EP, prev_pitch_FA, prev_pitch_FC, prev_pitch_FF, pitcher_id, inning, p_score)
+
+X_NB = data.matrix(pitches_pitcher_2015)  # feature matrix
+X_NB <- X_NB[, colnames(X_NB) != "pitch_type"]
+y_NB = factor(pitches_pitcher_2015$pitch_type)
+
+N = length(y_NB)
+train_frac = 0.8
+train_set = sample.int(N, floor(train_frac*N)) %>% sort
+test_set = setdiff(1:N, train_set)
+
+# training and testing matrices
+X_train = X_NB[train_set,]
+X_test = X_NB[test_set,]
+
+# Training and testing response vectors
+y_train = y_NB[train_set]
+y_test = y_NB[test_set]
+
+# Train the model
+nb_model = multinomial_naive_bayes(x = X_train, y = y_train)
+
+# predict on the test set
+y_test_pred = predict(nb_model, X_test)
+
+# look at the confusion matrix
+table(y_test, y_test_pred)
+
+# overall test-set accuracy
+sum(diag(table(y_test, y_test_pred)))/length(y_test)
+
+
+
