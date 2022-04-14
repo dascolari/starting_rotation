@@ -1,0 +1,20 @@
+---
+title: "Predi-Pitch: Snack on This Curve Whenever You Want"
+author: "David Scolari, Harrison Snell, Brandon Williams"
+date: "4/13/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(here)
+path <- here()
+load(file.path(path, "output", "pitcher_envi.RData"))
+```
+
+```{r tables, include=TRUE}
+types
+zones
+overall_performance
+by_pitch_performance
+```
