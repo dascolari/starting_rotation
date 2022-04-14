@@ -33,9 +33,11 @@ pitchesabs2015 = merge(x = pitches2015, y = atbats)
 # Arrieta 453562
 
 pitches_pitcher_2015 <- pitchesabs2015 %>% 
-  filter(pitcher_id == 572096)
+  filter(pitcher_id == 502381) %>% 
+  filter(pitch_type != "")
 
 pitches_pitcher_2015$pitch_type <- as.factor(pitches_pitcher_2015$pitch_type)
+
 
 
 ## Train / Test
@@ -46,32 +48,32 @@ pitcher_test  = testing(pitcher_split)
 
 ## Single tree and 1SE Prune
 
-pitcher.tree = rpart(pitch_type ~ b_score + b_count + s_count + outs + pitch_num + on_1b + on_2b + on_3b + first_pitch + prev_pitch, 
-                    data=pitcher_train,
-                    control = rpart.control(cp = .005, minsplit = 30))
-
-rpart.plot(pitcher.tree, cex = .7, type=2)
-
-prune_1se = function(my_tree) {
-  out = as.data.frame(my_tree$cptable)
-  thresh = min(out$xerror + out$xstd)
-  cp_opt = max(out$CP[out$xerror <= thresh])
-  prune(my_tree, cp=cp_opt)
-}
-
-pitcher.tree_prune = prune_1se(pitcher.tree)
-
-rpart.plot(pitcher.tree_prune, type=4, extra=1)
-
-pitcher_test = pitcher_test %>% 
-  mutate(pitch_pred = predict(pitcher.tree, pitcher_test, type='class'))
-
-# Make a table of classification errors
-xtabs(~pitch_type + pitch_pred, data=pitcher_test)
-
-# Performance
-nrow(pitcher_test)
-(xtabs(~pitch_type + pitch_pred, data=pitcher_test) %>% diag %>% sum)/nrow(pitcher_test)
+# pitcher.tree = rpart(pitch_type ~ b_score + b_count + s_count + outs + pitch_num + on_1b + on_2b + on_3b + first_pitch + prev_pitch, 
+#                     data=pitcher_train,
+#                     control = rpart.control(cp = .005, minsplit = 30))
+# 
+# rpart.plot(pitcher.tree, cex = .7, type=2)
+# 
+# prune_1se = function(my_tree) {
+#   out = as.data.frame(my_tree$cptable)
+#   thresh = min(out$xerror + out$xstd)
+#   cp_opt = max(out$CP[out$xerror <= thresh])
+#   prune(my_tree, cp=cp_opt)
+# }
+# 
+# pitcher.tree_prune = prune_1se(pitcher.tree)
+# 
+# rpart.plot(pitcher.tree_prune, type=4, extra=1)
+# 
+# pitcher_test = pitcher_test %>% 
+#   mutate(pitch_pred = predict(pitcher.tree, pitcher_test, type='class'))
+# 
+# # Make a table of classification errors
+# xtabs(~pitch_type + pitch_pred, data=pitcher_test)
+# 
+# # Performance
+# nrow(pitcher_test)
+# (xtabs(~pitch_type + pitch_pred, data=pitcher_test) %>% diag %>% sum)/nrow(pitcher_test)
 
 # For Arrieta, this was just barely better than predicting he throws slider every time
 
@@ -105,7 +107,7 @@ pitchesabs2015 = merge(x = pitches2015, y = atbats)
 ## Enter pitcher ID here
 
 pitches_pitcher_2015 <- pitchesabs2015 %>% 
-  filter(pitcher_id == 572096)
+  filter(pitcher_id == 502381)
 
 # pitches_pitcher_2015$pitch_type <- as.factor(pitches_pitcher_2015$pitch_type) 
 
@@ -306,21 +308,23 @@ swing_naively = foreach(i = i_pitchers, .combine='rbind') %dopar% {
 # Multiple pitchers with Random Forest
 #####
 
-i_pitchers = c(first_lineup$id[1:15])
+i_pitchers = c(first_lineup$id[1:30])
 
 swing_at_random = foreach(i = i_pitchers, .combine='rbind') %dopar% {
   pitches_pitcher_2015 <- pitchesabs2015 %>% 
-    filter(pitcher_id == i)
+    filter(pitcher_id == i) %>% 
+    filter(pitch_type != "")
   
-  pitches_pitcher_2015$pitch_type <- na.omit(pitches_pitcher_2015$pitch_type)
   
   pitches_pitcher_2015$pitch_type <- as.factor(pitches_pitcher_2015$pitch_type)
+  pitches_pitcher_2015$pitch_type <- droplevels(pitches_pitcher_2015$pitch_type)
   
   ## Train / Test
   
   pitcher_split =  initial_split(pitches_pitcher_2015, prop=0.8)
   pitcher_train = training(pitcher_split)
   pitcher_test  = testing(pitcher_split)
+
   
   ## Random Forest
   
