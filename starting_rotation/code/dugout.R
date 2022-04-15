@@ -14,5 +14,7 @@ library(fastDummies)
 library(scales)
 library(here)
 library(knitr)
+library(readxl)
+library(foreach)
 
 path <- here()
