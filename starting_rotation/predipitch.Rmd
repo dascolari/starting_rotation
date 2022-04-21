@@ -13,8 +13,7 @@ load(file.path(path, "output", "pitcher_envi.RData"))
 ```
 
 ```{r tables, include=TRUE}
-types
-zones
-overall_performance
-by_pitch_performance
+types_Clayton_Kershaw
+overall_performance_Clayton_Kershaw
+by_pitch_performance_Clayton_Kershaw
 ```
