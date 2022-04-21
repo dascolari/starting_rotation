@@ -9,6 +9,7 @@ library(randomForest)
 library(gbm)
 library(foreach)
 library(pitchRx)
+library(LICORS)
 
 pitch_ab_2015 <- read.csv("~/School/University of Texas-Austin/Classes/Data Mining/pitch_ab_2015.csv")
 
@@ -241,14 +242,14 @@ test = pitch_ab_2015 %>%
 test$pitch_type = as.factor(test$pitch_type)
 
 ggplot(test)+
-  geom_point(aes(x=break_angle,y=break_length,color=pitch_type, size=break_y),alpha=.2)
+  geom_point(aes(x=spin_dir,y=spin_rate,color=pitch_type),alpha=.2)
 
 ggplot(test)+
   geom_point(aes(x=px, y=pz))+
   xlim(-4,4)
 
 
-X = test[,-(1:7)]
+X = test[,(1:7)]
 X = scale(X, center=TRUE, scale=TRUE)
 
 # Extract the centers and scales from the rescaled data (which are named attributes)
@@ -256,7 +257,7 @@ mu = attr(X,"scaled:center")
 sigma = attr(X,"scaled:scale")
 
 # K-means++
-clust_kplus = kmeanspp(X, k=6, nstart=25)
+clust_kplus = kmeanspp(X, k=4, nstart=50)
 
 ggplot(test)+
   geom_point(aes(x=break_angle,y=break_length,color=clust_kplus$cluster),alpha=.2)
