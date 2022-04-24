@@ -236,7 +236,7 @@ pitches_2015 <- read.csv("~/School/University of Texas-Austin/Classes/Data Minin
 test = pitch_ab_2015 %>%
   filter(pitcher_id == 453562)%>%
   filter(pitch_type != "") %>%
-  filter(pitch_type != "IN")
+  filter(pitch_type != "IN")%>%
   select(pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)
 
 test$pitch_type = as.factor(test$pitch_type)
@@ -261,3 +261,26 @@ clust_kplus = kmeanspp(X, k=4, nstart=50)
 
 ggplot(test)+
   geom_point(aes(x=break_angle,y=break_length,color=clust_kplus$cluster),alpha=.2)
+
+
+###### PCA
+
+pc_pitch = prcomp(test[,-1], rank=6, scale=TRUE)
+
+summary(pc_pitch)
+
+test = test %>%
+  rownames_to_column('pitch_id')
+
+pitch_x = as.data.frame(pc_pitch$x)%>%
+  rownames_to_column('pitch_id')
+
+pc_data = merge(test, pitch_x, by='pitch_id')%>%
+  select(!pitch_id)
+
+
+ggplot(pc_data)+
+  geom_point(aes(x=pitch_type,y=PC6))
+
+ggplot(pc_data)+
+  geom_point(aes(x=spin_dir, y= PC1, color=pitch_type))
