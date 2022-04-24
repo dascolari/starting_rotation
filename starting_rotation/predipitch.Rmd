@@ -7,13 +7,30 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+
 library(here)
 path <- here()
-load(file.path(path, "output", "pitcher_envi.RData"))
+
+source(file.path(path, 'code', 'dugout.R'))
+
+load(file = file.path(path, 'output', 'tables', "overall_performance_all.RDs"))
+
+
+foreach(id = 1:30) %do% {
+  # make filenames according to loop index
+  fname_type <- paste0("types", id, ".RDs")
+  fname_zones <- paste0("zones", id, ".RDs")
+  fname_bypitch <- paste0("by_pitch_performance", id, ".RDs")
+
+  # load table outputs according to loop index
+  load(file = file.path(path, 'output', 'tables', fname_type))
+  load(file = file.path(path, 'output', 'tables', fname_zones))
+  load(file = file.path(path, 'output', 'tables', fname_bypitch))
+  }
 ```
 
 ```{r tables, include=TRUE}
 types_Clayton_Kershaw
-overall_performance_Clayton_Kershaw
+overall_performance_all
 by_pitch_performance_Clayton_Kershaw
 ```

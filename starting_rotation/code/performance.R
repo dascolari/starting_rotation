@@ -1,6 +1,6 @@
 load(file.path(path, "output", "pitches_import.RData"))
 
-foreach(id = 1:30, .combine = rbind) %do% {
+overall_performance_all <- foreach(id = 1:30, .combine = rbind) %do% {
   fname_model <- paste0("trashcan", id, ".RDs")
   load(file = file.path(path, 'output', 'models', fname_model))
   
@@ -43,11 +43,31 @@ foreach(id = 1:30, .combine = rbind) %do% {
     arrange(pitch_type) %>% 
     kable(caption = bp)
   
-  # name table outputs according to index
-  assign(paste("zones", pitcher_first, pitcher_last, sep = "_"), table_zones)
-  assign(paste("types", pitcher_first, pitcher_last, sep = "_"), table_types)
-  assign(paste("overall_performance", id, sep = "_"), overall_performance)
-  assign(paste("by_pitch_performance", pitcher_first, pitcher_last, sep = "_"), by_pitch_performance)
+  # create strings for naming tables according to loop index
+  tps <- paste("types", pitcher_first, pitcher_last, sep = "_")
+  zns <- paste("zones", pitcher_first, pitcher_last, sep = "_")
+  bypitch <- paste("by_pitch_performance", pitcher_first, pitcher_last, sep = "_")
+  overall <- paste("overall_performance", id, sep = "_")
+  
+  # name table outputs according to loop index
+  assign(tps, table_types)
+  assign(zns, table_zones)
+  assign(overall, overall_performance)
+  assign(bypitch, by_pitch_performance)
+  
+  # make filenames according to loop index
+  fname_type <- paste0("types", id, ".RDs")
+  fname_zones <- paste0("zones", id, ".RDs")
+  fname_bypitch <- paste0("by_pitch_performance", id, ".RDs")
+  
+  # save table outputs according to loop index
+  save(file = file.path(path, 'output', 'tables', fname_type), list = tps)
+  save(file = file.path(path, 'output', 'tables', fname_zones), list = zns)
+  save(file = file.path(path, 'output', 'tables', fname_bypitch), list = bypitch)
+  
   cbind(pitcher_last, pitcher_first, overall_performance)
 } %>%
-  arrange(desc(rate_trashcan))
+  arrange(desc(rate_trashcan)) %>% 
+  kable(caption = "Overall Performance")
+
+save(file = file.path(path, 'output', 'tables', "overall_performance_all.RDs"), list = 'overall_performance_all')

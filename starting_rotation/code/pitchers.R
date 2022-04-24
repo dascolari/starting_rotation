@@ -2,6 +2,8 @@ load(file.path(path, "output", "pitches_import.RData"))
 
 foreach(id = 1:30, .combine = rbind) %do% {
 
+  id = 12
+  
   pitcher <- pitches %>% 
     filter(pitcher_id == names$id[id] & 
              is.na(zone) == FALSE &
@@ -15,8 +17,6 @@ foreach(id = 1:30, .combine = rbind) %do% {
                                lag(pitch_type), "none"),
            prev_pitch2 = ifelse(first_pitch == 0 & lag(first_pitch) == 0, 
                                 lag(pitch_type, n = 2L), "none"),
-           # prev_pitch3 = ifelse(first_pitch == 0 & prev_pitch2 != "none" & prev_pitch != "none", 
-           #                      lag(pitch_type, n = 3L), "none"),
            zone = factor(zone),
            prev_zone = factor(ifelse(first_pitch == 0, lag(zone), 15))) %>% 
     filter(is.na(prev_pitch) == FALSE) %>% 
@@ -98,7 +98,7 @@ foreach(id = 1:30, .combine = rbind) %do% {
   
   pitcher <- merge(pitcher, ab_events, by = "ab_id")
   
-  gameday_stuff <- pitches %>% 
+  inning_stuff <- pitches %>% 
     filter(pitcher_id == names$id[id] & 
              is.na(zone) == FALSE &
              pitch_type != "PO" & 
@@ -112,15 +112,14 @@ foreach(id = 1:30, .combine = rbind) %do% {
     pivot_wider(id_cols = "g_id", names_from = "pitch_type", values_from = "count") %>% 
     replace(is.na(.), 0) %>% 
     mutate(total = rowSums(across(where(is.numeric))) - g_id) %>% 
-    mutate_at(vars(- c("g_id", "total")), ~./total) %>% 
-    mutate(inning = 5)
+    mutate_at(vars(- c("g_id", "total")), ~./total)
   
   max_inning <- max(pitcher$inning)
   
-  foreach(i = 6:max_inning) %do% {
-    inning_stuff <- gameday_stuff %>% mutate(inning = i)
-    gameday_stuff <- rbind(gameday_stuff, inning_stuff)
-  }
+  gameday_stuff <- 
+    foreach(i = 1:max_inning, .combine = rbind) %do% {
+    inning_stuff %>% mutate(inning = i)
+  }%>% mutate_at(vars(- c("g_id", "total", "inning")), ~ifelse(inning <= 4, 0, .))
   
   pitcher <- merge(pitcher, gameday_stuff, by = c("g_id", "inning"), all.x = TRUE) %>% 
     replace(is.na(.), 0)
