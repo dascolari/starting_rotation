@@ -280,7 +280,14 @@ pc_data = merge(test, pitch_x, by='pitch_id')%>%
 
 
 ggplot(pc_data)+
-  geom_point(aes(x=pitch_type,y=PC6))
+  geom_point(aes(x=pitch_type,y=PC1))
 
 ggplot(pc_data)+
-  geom_point(aes(x=spin_dir, y= PC1, color=pitch_type))
+  geom_point(aes(x=break_y, y= PC1, color=pitch_type))
+
+
+sum_ff_si = pc_data %>%
+  group_by(pitch_type)%>%
+  summarize(break_y = mean(break_y), spin_rate = mean(spin_rate),
+            spin_dir = mean(spin_dir), start_speed = mean(start_speed),
+            end_speed = mean(end_speed), px = mean(px), pz = mean(pz))
