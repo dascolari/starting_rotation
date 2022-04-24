@@ -2,8 +2,6 @@ load(file.path(path, "output", "pitches_import.RData"))
 
 foreach(id = 1:30, .combine = rbind) %do% {
 
-  id = 12
-  
   pitcher <- pitches %>% 
     filter(pitcher_id == names$id[id] & 
              is.na(zone) == FALSE &
@@ -66,6 +64,15 @@ foreach(id = 1:30, .combine = rbind) %do% {
   
   table_zones <- zones %>% 
     kable(caption = pz)
+  
+  tps <- paste("types", pitcher_first, pitcher_last, sep = "_")
+  zns <- paste("zones", pitcher_first, pitcher_last, sep = "_")
+  assign(tps, table_types)
+  assign(zns, table_zones)
+  fname_type <- paste0("types", id, ".RDs")
+  fname_zones <- paste0("zones", id, ".RDs")
+  save(file = file.path(path, 'output', 'tables', fname_type), list = tps)
+  save(file = file.path(path, 'output', 'tables', fname_zones), list = zns)
   
   # preserve order of most used as a factor
   # set the factor levels of zone equal to this order

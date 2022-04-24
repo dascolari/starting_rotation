@@ -44,25 +44,17 @@ overall_performance_all <- foreach(id = 1:30, .combine = rbind) %do% {
     kable(caption = bp)
   
   # create strings for naming tables according to loop index
-  tps <- paste("types", pitcher_first, pitcher_last, sep = "_")
-  zns <- paste("zones", pitcher_first, pitcher_last, sep = "_")
   bypitch <- paste("by_pitch_performance", pitcher_first, pitcher_last, sep = "_")
   overall <- paste("overall_performance", id, sep = "_")
   
   # name table outputs according to loop index
-  assign(tps, table_types)
-  assign(zns, table_zones)
   assign(overall, overall_performance)
   assign(bypitch, by_pitch_performance)
   
   # make filenames according to loop index
-  fname_type <- paste0("types", id, ".RDs")
-  fname_zones <- paste0("zones", id, ".RDs")
   fname_bypitch <- paste0("by_pitch_performance", id, ".RDs")
   
   # save table outputs according to loop index
-  save(file = file.path(path, 'output', 'tables', fname_type), list = tps)
-  save(file = file.path(path, 'output', 'tables', fname_zones), list = zns)
   save(file = file.path(path, 'output', 'tables', fname_bypitch), list = bypitch)
   
   cbind(pitcher_last, pitcher_first, overall_performance)
