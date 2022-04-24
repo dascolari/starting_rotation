@@ -5,5 +5,7 @@
 *.csv
 *.DS_store
 pitches.zip
+*.RDs
+*.RData
 
 .DS_Store
