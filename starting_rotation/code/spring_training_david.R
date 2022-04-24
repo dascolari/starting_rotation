@@ -4,7 +4,7 @@ load(file.path(path, "output", "pitches_import.RData"))
 # analyzing each pitch pitcher 
 ##########################
 
-foreach(id = 1:30) %do% {
+foreach(id = 1:2, .combine = rbind) %do% {
   pitcher <- pitches %>% 
     filter(pitcher_id == names$id[id] & 
              is.na(zone) == FALSE &
@@ -119,8 +119,7 @@ foreach(id = 1:30) %do% {
   # guessing most thrown pitch
   overall_performance <- pitcher_osp %>% 
     summarise(rate_sitONE = round(sum(success_sitONE)/length(pitch_type), 3), 
-              rate_trashcan = round(sum(success_trashcan)/length(pitch_type),3)) %>% 
-    kable(caption = op)
+              rate_trashcan = round(sum(success_trashcan)/length(pitch_type),3))
   
   # see how the models do at classifying the different pitch types
   by_pitch_performance <- pitcher_osp %>% 
@@ -132,9 +131,11 @@ foreach(id = 1:30) %do% {
   # name table outputs according to index
   assign(paste("zones", pitcher_first, pitcher_last, sep = "_"), table_zones)
   assign(paste("types", pitcher_first, pitcher_last, sep = "_"), table_types)
-  assign(paste("overall_performance", pitcher_first, pitcher_last, sep = "_"), overall_performance)
+  assign(paste("overall_performance", id, sep = "_"), overall_performance)
   assign(paste("by_pitch_performance", pitcher_first, pitcher_last, sep = "_"), by_pitch_performance)
+  overall_performance
 }
+
 
 #######################
 # tree graph
@@ -165,5 +166,7 @@ rpart.plot(pitcher.tree_prune, type=4, extra=1)
 
 
 
-save(file = file.path(path, "output", "pitcher_envi.RData"), 
-           list = c("types", "zones", "overall_performance", "by_pitch_performance", "trashcan"))
+save(file = file.path(path, "output", "pitcher_envi.RData"),
+           list = everything())
+
+save.image(file = file.path(path, "output", "pitcher_envi.RData"))

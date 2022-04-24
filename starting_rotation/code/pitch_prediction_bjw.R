@@ -20,9 +20,12 @@ pitches <- pitches %>%
   dummy_cols(select_columns = "prev_pitch")
 
 pitches2015 <- pitches %>% 
-  filter(ab_id < 2016000000) 
+  filter(ab_id < 2016000000) %>% 
+  filter(!is.na(pitch_type))
 
-pitchesabs2015 = merge(x = pitches2015, y = atbats)
+pitchesabs2015 = merge(x = pitches2015, y = atbats) 
+
+#pitchesabs2015 %>% count(pitcher_id, pitch_type) %>% filter(is.na(pitch_type)) %>% View()
 
 ######
 #
@@ -328,7 +331,7 @@ swing_at_random = foreach(i = i_pitchers, .combine='rbind') %dopar% {
   
   ## Random Forest
   
-  pitch.forest = randomForest(pitch_type ~ b_score + b_count + s_count + outs + pitch_num + on_1b + on_2b + on_3b + first_pitch + prev_pitch + prev_pitch_AB + prev_pitch_CH + prev_pitch_CU + prev_pitch_EP + prev_pitch_FA + prev_pitch_FC + prev_pitch_FF, 
+  pitch.forest = randomForest(pitch_type ~ b_score + b_count + s_count + outs + pitch_num + on_1b + on_2b + on_3b + first_pitch + prev_pitch_AB + prev_pitch_CH + prev_pitch_CU + prev_pitch_EP + prev_pitch_FA + prev_pitch_FC + prev_pitch_FF, 
                               data=pitcher_train, na.action=na.omit)
   
   pitcher_test = pitcher_test %>% 
