@@ -27,7 +27,7 @@ outs = 0
   pitcher_predi$pitchhat_trashcan = factor(pitcher_predi$pitchhat_trashcan, factor_types)
   
   pitcher_result <- pitcher_predi %>% 
-    filter(stand == stance, s_count == strikes, b_count == balls, out == outs)
+    filter(stand == stance, s_count == strikes, b_count == balls, outs == outs)
   
   pitcher_guess <- pitcher_result %>% 
     group_by(pitchhat_trashcan) %>% 
