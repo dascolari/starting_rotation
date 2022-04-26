@@ -1,4 +1,4 @@
-load(file.path(path, "output", "pitches_import.RData"))
+load(file.path(path, "data", "names.RDs"))
 
 overall_performance_all <- foreach(id = 1:30, .combine = rbind) %do% {
   fname_model <- paste0("trashcan", id, ".RDs")

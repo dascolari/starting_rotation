@@ -18,6 +18,7 @@ library(readxl)
 library(foreach)
 library(groupdata2)
 library(pdp)
-
-
+library(arules)
+library(arulesViz)
+  
 path <- here()

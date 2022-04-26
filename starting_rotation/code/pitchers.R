@@ -1,4 +1,4 @@
-load(file.path(path, "output", "pitches_import.RData"))
+load(file.path(path, "data", "pitches.RDs"))
 
 foreach(id = 1:30, .combine = rbind) %do% {
 
@@ -33,7 +33,8 @@ foreach(id = 1:30, .combine = rbind) %do% {
                   outs, 
                   p_score, 
                   b_score, 
-                  inning)
+                  inning, 
+                  slot)
   pitcher_first <- names$first_name[id]
   pitcher_last <- names$last_name[id]
   
