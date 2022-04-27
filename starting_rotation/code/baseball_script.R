@@ -159,6 +159,8 @@ nrow(test_test)
 
 # Player Search
 
+player_names <- read.csv("~/School/University of Texas-Austin/Classes/Data Mining/starting_rotation/starting_rotation/data/raw/archive/archive/player_names.csv")
+
 ide = ifelse(player_names$first_name == "Chad" & 
                player_names$last_name =="Bettis",
              player_names$id,0)
@@ -171,6 +173,21 @@ name_list = c(453562,506433,519455,518516,519242,446372,456034,
               608379,518452)
 
 starters = filter(player_names, id %in% name_list)
+
+starters = starters %>%
+  mutate(name = paste(first_name,last_name,sep=" "))
+
+test_list = list(572096,433587,502042,502154,451584,572971,446372,
+                 502381,456034,453286,547973,477132,518516,543243,
+                 434718,502202,425844,474521,519455,594798,543037,
+                 453343,453562,453192,544931,543521,608379,519242,
+                 518452,506433)
+
+names(test_list) = c(starters[,4])
+
+test = pitch_ab_2015 %>%
+  filter(pitcher_id == 506433)
+
 
 write.csv(starters, "first_lineup.csv", row.names = FALSE)
 
@@ -245,8 +262,17 @@ ggplot(test)+
   geom_point(aes(x=spin_dir,y=spin_rate,color=pitch_type),alpha=.2)
 
 ggplot(test)+
-  geom_point(aes(x=px, y=pz))+
-  xlim(-4,4)
+  geom_point(aes(x=px, y=pz, color = pitch_type))+
+  geom_segment(aes(x = -2.66, y = 1.583087, xend = 2.66, yend = 1.583087))+
+  geom_segment(aes(x = -2.66, y = 3.458079, xend = 2.66, yend = 3.458079))+
+  geom_segment(aes(x = 2, y = 1.583087, xend = 2.66, yend = 3.458079))+
+  geom_segment(aes(x = -2.66 , y = 1.583087, xend = -2.66, yend = 3.458079))
+
+mean(pitch_ab_2015$sz_bot)
+
+
+
+
 
 
 X = test[,(1:7)]
@@ -286,7 +312,17 @@ ggplot(pc_data)+
   geom_point(aes(x=break_y, y= PC1, color=pitch_type))
 
 
-sum_ff_si = pc_data %>%
+pitch_sum = pitch_ab_2015 %>%
+  filter(pitcher_id == 453562)%>%
+  filter(pitch_type != "") %>%
+  filter(pitch_type != "IN")%>%
+  select(pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)%>%
+  mutate(pitch_type = as.factor(pitch_type))%>%
+  group_by(pitch_type)%>%
+  summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
+
+sum_ff_si = pitch_ab_2015 %>%
+  filter(pitcher_id == 453562)%>%
   group_by(pitch_type)%>%
   summarize(break_y = mean(break_y), spin_rate = mean(spin_rate),
             spin_dir = mean(spin_dir), start_speed = mean(start_speed),
