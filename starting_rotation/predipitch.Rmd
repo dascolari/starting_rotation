@@ -29,6 +29,25 @@ foreach(id = 1:30) %do% {
   }
 ```
 
+## Introduction
+Gentlemen, pitch predicting is a very important part of baseball. So important that teams will do almost anything for insight on what the opposing team's pitcher is going to throw. Other than illicit methods, hitters are trained to use information on a pitcher's previous pitch throwing behvior to guess which pitch is coming next. We can model this deciscion making process with machine learning techniques. 
+
+By modeling pitch prediction, we can learn what information is relevant to a pitcher's pitch selection. We can also better understand what makes a pitcher more unpredictable than other. It's gonna be good
+
+In the following report will talk about why pithes are different, share evidence that pitchers have different strategies from at bat to at bat, and describe the engineering of our model, which is basically a trashcan .
+
+## Pitches are different you dumb dumb idiot
+Harrison's graphs
+
+## Pichers be sequencing
+AB networks
+
+## Our Random Forrest 
+describe the features, describe the dream 
+
+## what it all means, probably nothing 
+
+## Appendix
 ```{r tables, include=TRUE}
 overall_performance_all
 
