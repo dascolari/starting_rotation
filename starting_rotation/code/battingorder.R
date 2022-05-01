@@ -1,4 +1,4 @@
-foreach(id = 12:12) %do% {
+foreach(id = 1:30) %do% {
   
   fname_pitcher <- paste0("pitcher", id, ".RDs")
   load(file = file.path(path, 'output', 'pitchers', fname_pitcher))
@@ -38,14 +38,7 @@ foreach(id = 12:12) %do% {
   pitcher_trans = as(pitcher_list, "transactions")
   pitcher_rules = apriori(pitcher_trans, 
                       parameter=list(support=.01, confidence=.5, maxlen=5))
-  inspect(pitcher_rules)
-  
-  sub_pitchrules = subset(pitcher_rules)
-  saveAsGraph(sub_pitchrules, file = file.path(path, 'output', 'models', 'pitcher_rules.graphml'))
-  
-  plot(pitcher_rules)
-  plot(pitcher_rules, measure = c("support", "lift"), shading = "confidence")
-  plot(pitcher_rules, method='two-key plot')
-  plot(head(pitcher_rules, 100, by='lift'), method='graph')
-  
+
+  fname_rules <- paste0("pitcher_rules", id, ".graphml")
+  saveAsGraph(pitcher_rules, file = file.path(path, 'output', 'models', fname_rules))
 }

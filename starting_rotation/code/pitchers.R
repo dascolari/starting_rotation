@@ -112,8 +112,7 @@ foreach(id = 1:30, .combine = rbind) %do% {
              pitch_type != "PO" & 
              pitch_type != "" & 
              pitch_type != "IN" &
-             pitch_type != "UN" &
-             inning <= 4) %>% 
+             pitch_type != "UN") %>% 
     arrange(ab_id, pitch_num) %>% 
     group_by(g_id, pitch_type) %>% 
     summarise(count = length(pitch_type), .groups = 'drop') %>% 
@@ -127,13 +126,10 @@ foreach(id = 1:30, .combine = rbind) %do% {
   gameday_stuff <- 
     foreach(i = 1:max_inning, .combine = rbind) %do% {
     inning_stuff %>% mutate(inning = i)
-  }%>% mutate_at(vars(- c("g_id", "total", "inning")), ~ifelse(inning <= 4, 0, .))
+  }
   
   pitcher <- merge(pitcher, gameday_stuff, by = c("g_id", "inning"), all.x = TRUE) %>% 
     replace(is.na(.), 0)
-  
-  # ## make quick changes by manually setting id
-  # id = 
   
   fname_pitcher <- paste("pitcher", id, ".RDs", sep = "")
   save(file = file.path(path, 'output', 'pitchers', fname_pitcher), list = "pitcher")
