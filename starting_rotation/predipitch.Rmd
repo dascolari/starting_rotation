@@ -44,8 +44,18 @@ AB networks
 
 ## Our Random Forrest 
 describe the features, describe the dream 
+Brief description of the features in each model
+ - since I made the models, it might be easiest if I do this(david)
+ - but generally, trashcan_1 is situation info, trashcan_2 is lagged pitches and event results, trashcan_3 is addition of "game level fixed effects" type info
+ 
+Look at the tables generated in the appendix and write about any patterns you see. For example, some pitchers get better with each addition of features, some get better with the first addition but worse with the second addition, some get worse with each addition of features. 
+
+Also look at the by pitch performance. Seems like there's a tradeoff between accuracy with the pitcher's most frequent pitch and accuracy with some of the secondary pitches. Is there something about the pitchers that explains these patterns? (we probably can't say definitively why this is, but we can suggest reasons)
+
 
 ## what it all means, probably nothing 
+
+implications for how hitters should approach thinking about predicting pitches. 
 
 ## Appendix
 ```{r tables, include=TRUE}
