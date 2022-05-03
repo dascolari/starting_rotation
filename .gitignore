@@ -1,11 +1,9 @@
 .Rproj.user
 .Rhistory
-.RData
 .Ruserdata
 *.csv
 *.DS_store
 pitches.zip
 pitcher*
-*.RData
 
 .DS_Store
