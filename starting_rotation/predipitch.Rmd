@@ -53,6 +53,38 @@ Look at the tables generated in the appendix and write about any patterns you se
 Also look at the by pitch performance. Seems like there's a tradeoff between accuracy with the pitcher's most frequent pitch and accuracy with some of the secondary pitches. Is there something about the pitchers that explains these patterns? (we probably can't say definitively why this is, but we can suggest reasons)
 
 
+### The Data
+(Feel free to relocate this to where it makes the most sense.)
+
+The data involved in this project consists of every pitch from the 2015 through the 2018 Major League Baseball (MLB) seasons. These four seasons contained nearly 3 million observations, and the data include categorization of 16 different types of pitches, the spin, speed, and location of each pitch, the game situation (score, runners on base, balls and strikes, etc.), information about the pitcher and batter, and the result of the at-bat. 
+
+### Methodology
+
+(David, supplement these descriptions with further details as needed.)
+
+Given how difficult it is to get hits consistently at the major league level, having an idea an idea of what the opposing pitcher is about to throw would confer a significant advantage to the hitter. We endeavor to create a model that successfully predicts the next pitch a pitcher will throw in an at-bat, given the circumstances of the at-bat, the tendencies of the pitcher, and the progress of the game up to that point. Using three distinct random forest models, we derive a predictive approach that generally outperforms guessing that the pitcher will throw their most common pitch (often called "sitting on a pitch"), and in most cases, significantly exceeds this "sitting on a pitch" approach.
+
+#### The Situational Model
+
+The first of our three random forest models uses information readily available in the at-bat to predict the upcoming pitch. The features involved here include the ball-strike count, opposing batter's stance, inning, how many pitches thrown in the at-bat so far, the game score, and the runners on base.
+
+#### The Lagged Model
+
+The second random forest builds upon the features selected in the Situational Model and supplements them with information about the previous two pitches and the event the last at-bat. This allows for the model to incorporate lagged information that might directly influence the next pitch. Did the pitcher just give up a home run on the curve? Maybe it's a steady diet of fastballs from here on out. Did the pitcher just give the batter two straight fastballs to study? Perhaps it's time for an off-speed pitch like a change-up. 
+
+#### Game-Level Fixed Effects Model
+
+The third and final random forest uses nearly every feature from the dataset to control for all possible scenarios and variations in the feature matrix. This means that it not only considers all the factors included in the other two models, but also includes what the pitcher's game has looked like so far; that is, it takes into account the pitch choices as a percent of the overall pitches in the game up to that point. (Is this a correct reading?) So if the pitcher is leaning heavily on the slider that day, this model will incorporate that pattern. 
+
+## Results
+
+Most models improved on the guess of the upcoming pitch when compared to the "sitting on the pitch" (called "sitONE") as seen in [TABLE/APPENDIX]. Consider the case of Chris Sale. Sale is a perennial All-Star, and finished top-5 in Cy Young (MLB's most valuable pitcher award) votes each year of our data. If a batter were to look for his most common pitch (the two-seam fastball), he would would only be right about one third of the time. However, Sale becomes increasingly more predictable as the model incorporates more features. The Situational Model and the Lagged Model predict his next pitch at 37% and 38% respectively. Still, the Game Fixed Effects Model predicts his next pitch with an out-of-sample accuracy of nearly 46%, a jump of about 13%. There isn't a hitter in baseball who wouldn't want to know Sale's next pitch with a 13% increase in accuracy!
+
+(Do these numbers need to be responsive to different train/test splits?)
+
+Predictive power does not necessarily equate to hits. Enter Zack Britton, who led the league in saves during the 2016 season. Britton is nearly a one-pitch pitcher, throwing sinkers on 89.7% of his pitches. The Game Fixed Effects model improves this prediction a few fractions of a percent, but in either case, it's fair to say that most hitters know what Britton is about to throw. Nevertheless, Britton put up an otherworldly 0.54 ERA in 2016! Even if batters knew that sinker was on its way, making contact that leads to a hit is a whole other matter. 
+
+
 ## what it all means, probably nothing 
 
 implications for how hitters should approach thinking about predicting pitches. 
