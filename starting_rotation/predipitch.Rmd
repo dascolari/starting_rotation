@@ -60,9 +60,11 @@ The data involved in this project consists of every pitch from the 2015 through 
 
 ### Methodology
 
-(David, supplement these descriptions with further details as needed.)
+[David, supplement these descriptions with further details as needed.]
 
 Given how difficult it is to get hits consistently at the major league level, having an idea an idea of what the opposing pitcher is about to throw would confer a significant advantage to the hitter. We endeavor to create a model that successfully predicts the next pitch a pitcher will throw in an at-bat, given the circumstances of the at-bat, the tendencies of the pitcher, and the progress of the game up to that point. Using three distinct random forest models, we derive a predictive approach that generally outperforms guessing that the pitcher will throw their most common pitch (often called "sitting on a pitch"), and in most cases, significantly exceeds this "sitting on a pitch" approach.
+
+The models are generated with a train/test split and then evaluated for the out-of-sample performance against the testing set. Models are generated per pitcher, in such a way that be beneficial in application to a baseball manager or hitter, given the situation in the game. 
 
 #### The Situational Model
 
