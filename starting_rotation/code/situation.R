@@ -1,13 +1,13 @@
 load(file.path(path, "output", "pitches_import.RData"))
 
-id = 12
+id = 13
 stance = "R"
 strikes = 0
 balls = 0
 outs = 0
 
 
-  fname_model <- paste0("trashcan", id, ".RDs")
+  fname_model <- paste0("trashcans", id, ".RData")
   load(file = file.path(path, 'output', 'models', fname_model))
   
   fname_pitcher <- paste0("pitcher", id, ".Rds")
@@ -23,7 +23,7 @@ outs = 0
   # re-factor to get most thrown pitch first in each table
   pitcher$pitch_type <- factor(pitcher$pitch_type, factor_types)
   pitcher_predi <- pitcher %>% 
-    mutate(pitchhat_trashcan = predict(trashcan, pitcher))
+    mutate(pitchhat_trashcan = predict(trashcan_1, pitcher))
   pitcher_predi$pitchhat_trashcan = factor(pitcher_predi$pitchhat_trashcan, factor_types)
   
   pitcher_result <- pitcher_predi %>% 

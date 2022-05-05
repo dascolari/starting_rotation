@@ -185,8 +185,12 @@ test_list = list(572096,433587,502042,502154,451584,572971,446372,
 
 names(test_list) = c(starters[,4])
 
+path = "C:/Users/Student/Documents/School/University of Texas-Austin/Classes/Data Mining/starting_rotation/starting_rotation"
+
 test = pitch_ab_2015 %>%
   filter(pitcher_id == 506433)
+
+as.data.frame(types_Jake_Arrieta)
 
 
 write.csv(starters, "first_lineup.csv", row.names = FALSE)
@@ -327,3 +331,13 @@ sum_ff_si = pitch_ab_2015 %>%
   summarize(break_y = mean(break_y), spin_rate = mean(spin_rate),
             spin_dir = mean(spin_dir), start_speed = mean(start_speed),
             end_speed = mean(end_speed), px = mean(px), pz = mean(pz))
+
+
+
+
+#### Code for Situation
+
+load("C:/Users/Student/Documents/School/University of Texas-Austin/Classes/Data Mining/starting_rotation/starting_rotation/output/pitches_import.RData")
+
+
+by_pitch_performance_Trevor_Rosenthal
