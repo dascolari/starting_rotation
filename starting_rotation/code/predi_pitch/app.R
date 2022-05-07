@@ -36,7 +36,8 @@ name_list = c(453562,506433,519455,518516,519242,446372,456034,
 starters = filter(player_names, id %in% name_list)
 
 starters = starters %>%
-  mutate(name = paste(first_name,last_name,sep=" "))
+  mutate(name = paste(first_name,last_name,sep=" "))%>%
+  rownames_to_column('new_id_index')
 
 test_list = list(572096,433587,502042,502154,451584,572971,446372,
                  502381,456034,453286,547973,477132,518516,543243,
@@ -94,7 +95,7 @@ ui <- pageWithSidebar(
     
     plotOutput("break_plot", height = "300px"),
     
-    verbatimTextOutput("situation_summary")
+    tableOutput("situation")
     
   )
 )
@@ -112,8 +113,31 @@ server <- function(input, output) {
     
   })
   
-  situation <- reactive({
-    sit_data = selected_pitcher()
+  output$situation <- renderTable({
+    # Retrieve 1-30 id
+    choice = starters %>%
+      filter(id == input$pitch_name)
+    
+    id = as.numeric(choice[1,1])
+    
+    fname_model <- paste0("trashcans", id, ".RData")
+    load(file = file.path(path, 'output', 'models', fname_model))
+    
+    fname_pitcher <- paste0("pitcher", id, ".Rds")
+    load(file = file.path(path, 'output', 'pitchers', fname_pitcher))
+    
+    fname_factor <- paste0("pitcher_factor", id, ".RDs")
+    load(file = file.path(path, 'output', 'pitchers', fname_factor))
+    
+    pitcher_first <- choice$first_name[1]
+    pitcher_last <- names$last_name[1]
+    
+    pitcher$pitch_type <- factor(pitcher$pitch_type, factor_types)
+    pitcher_predi <- pitcher %>% 
+      mutate(pitchhat_trashcan = predict(trashcan_1, pitcher))
+    pitcher_predi$pitchhat_trashcan = factor(pitcher_predi$pitchhat_trashcan, factor_types)
+    
+    sit_data = pitcher_predi
     if (input$no_s_count == FALSE || input$no_b_count == FALSE || input$no_o == FALSE || input$no_stance == FALSE){
       if (input$no_s_count == FALSE){
         sit_data = sit_data %>%
@@ -147,6 +171,23 @@ server <- function(input, output) {
     else {
       print("No specified situation")
     }
+    
+    pitcher_guess <- sit_data %>% 
+      group_by(pitchhat_trashcan) %>% 
+      summarize(prediction = n()) %>% 
+      mutate(percent = prediction / sum(prediction)) %>% 
+      rename(pitch_type = pitchhat_trashcan)
+    
+    pitcher_real <-  sit_data %>% 
+      group_by(pitch_type) %>% 
+      summarize(actual = n()) %>% 
+      mutate(actual_percent = actual / sum(actual))
+    
+    pitcher_result <- sit_data %>% 
+      mutate(success_trashcan = ifelse(pitch_type == pitchhat_trashcan, 1, 0))
+    
+    situation <- merge(pitcher_guess, pitcher_real)
+    situation
   })
   
   output$pitch_sum <- renderTable({
@@ -157,16 +198,9 @@ server <- function(input, output) {
       summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
   })
   
-  
-   output$general_summary <- renderPrint({
-     pitch_name <- selected_pitcher()
-     summary(pitch_name)
-   })
-  
-  output$situation_summary <- renderPrint({
-    sit_sum <- situation()
-    summary(sit_sum)
-  })
+  #output$situation_summary <- renderTable({
+  #  situation
+  #})
   
   output$spin_plot <- renderPlot({
     spins <- selected_pitcher()

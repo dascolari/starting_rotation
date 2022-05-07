@@ -254,18 +254,25 @@ pitches_2015 <- read.csv("~/School/University of Texas-Austin/Classes/Data Minin
 
 
 
-test = pitch_ab_2015 %>%
-  filter(pitcher_id == 453562)%>%
+plot_data = pitches %>%
+  filter(pitcher_id == 425844)%>%
   filter(pitch_type != "") %>%
   filter(pitch_type != "IN")%>%
   select(pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)
 
-test$pitch_type = as.factor(test$pitch_type)
+plot_data$pitch_type = as.factor(plot_data$pitch_type)
 
-ggplot(test)+
-  geom_point(aes(x=spin_dir,y=spin_rate,color=pitch_type),alpha=.2)
+ggplot(plot_data)+
+  geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)
 
-ggplot(test)+
+ggplot(plot_data)+
+  geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)
+
+ggplot(plot_data)+
+  geom_density(aes(x=break_length))+
+  facet_wrap(~pitch_type)
+
+ggplot(plot_data)+
   geom_point(aes(x=px, y=pz, color = pitch_type))+
   geom_segment(aes(x = -2.66, y = 1.583087, xend = 2.66, yend = 1.583087))+
   geom_segment(aes(x = -2.66, y = 3.458079, xend = 2.66, yend = 3.458079))+
@@ -273,6 +280,8 @@ ggplot(test)+
   geom_segment(aes(x = -2.66 , y = 1.583087, xend = -2.66, yend = 3.458079))
 
 mean(pitch_ab_2015$sz_bot)
+
+table(pitch_sum)
 
 
 
@@ -316,8 +325,7 @@ ggplot(pc_data)+
   geom_point(aes(x=break_y, y= PC1, color=pitch_type))
 
 
-pitch_sum = pitch_ab_2015 %>%
-  filter(pitcher_id == 453562)%>%
+pitch_sum = pitches %>%
   filter(pitch_type != "") %>%
   filter(pitch_type != "IN")%>%
   select(pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)%>%
@@ -341,3 +349,68 @@ load("C:/Users/Student/Documents/School/University of Texas-Austin/Classes/Data 
 
 
 by_pitch_performance_Trevor_Rosenthal
+
+
+
+
+
+#### Markdown Code
+
+library(lemon)
+knit_print.data.frame <- lemon_print
+
+harrison_path = "C:/Users/Student/Documents/School/University of Texas-Austin/Classes/Data Mining/starting_rotation/starting_rotation"
+
+load(file.path(path, "output", "pitches_import.RData"))
+
+# {r, render= lemon_print}
+pitch_sum = pitches %>%
+  filter(pitch_type != "") %>%
+  filter(pitch_type != "IN")%>%
+  dplyr::select(pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)%>%
+  mutate(pitch_type = as.factor(pitch_type))%>%
+  group_by(pitch_type)%>%
+  summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
+
+pitch_sum
+
+plot_data = pitches %>%
+  filter(pitch_type != "") %>%
+  filter(pitch_type != "IN")%>%
+  dplyr::select(pitcher_id,pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)
+
+plot_data$pitch_type = as.factor(plot_data$pitch_type)
+
+plot_archer = plot_data%>%
+  filter(pitcher_id == 502042)
+
+plot_arrieta = plot_data %>%
+  filter(pitcher_id == 453562)
+
+plot_greinke = plot_data %>%
+  filter(pitcher_id == 425844)
+
+ggplot(plot_archer)+
+  geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)
+
+ggplot(plot_archer)+
+  geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)
+
+ggplot(plot_arrieta)+
+  geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)
+
+ggplot(plot_arrieta)+
+  geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)
+
+ggplot(plot_greinke)+
+  geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)
+
+ggplot(plot_greinke)+
+  geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)
+
+plot_all = plot_data%>%
+  filter(pitcher_id == 502042 || pitcher_id == 453562 || pitcher_id == 425844)
+
+ggplot(plot_all)+
+  geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)
+
