@@ -58,6 +58,8 @@ Also look at the by pitch performance. Seems like there's a tradeoff between acc
 
 The data involved in this project consists of every pitch from the 2015 through the 2018 Major League Baseball (MLB) seasons. These four seasons contained nearly 3 million observations, and the data include categorization of 16 different types of pitches, the spin, speed, and location of each pitch, the game situation (score, runners on base, balls and strikes, etc.), information about the pitcher and batter, and the result of the at-bat. 
 
+(Gonna add a description of some of the built features here to make them easier to talk about in a later section)
+
 ### Methodology
 
 (David, supplement these descriptions with further details as needed.)
@@ -81,6 +83,7 @@ The third and final random forest uses nearly every feature from the dataset to 
 Most models improved on the guess of the upcoming pitch when compared to the "sitting on the pitch" (called "sitONE") as seen in [TABLE/APPENDIX]. Consider the case of Chris Sale. Sale is a perennial All-Star, and finished top-5 in Cy Young (MLB's most valuable pitcher award) votes each year of our data. If a batter were to look for his most common pitch (the two-seam fastball), he would would only be right about one third of the time. However, Sale becomes increasingly more predictable as the model incorporates more features. The Situational Model and the Lagged Model predict his next pitch at 37% and 38% respectively. Still, the Game Fixed Effects Model predicts his next pitch with an out-of-sample accuracy of nearly 46%, a jump of about 13%. There isn't a hitter in baseball who wouldn't want to know Sale's next pitch with a 13% increase in accuracy!
 
 (Do these numbers need to be responsive to different train/test splits?)
+I think it'd be nice, but I think it counts as unfeasible for our computing power purposes since running the models once takes me about 30 minutes for me at least. But for interpretation purposes, small difference in performance might not be stable results so they shouldn't be read into too much. 
 
 Predictive power does not necessarily equate to hits. Enter Zack Britton, who led the league in saves during the 2016 season. Britton is nearly a one-pitch pitcher, throwing sinkers on 89.7% of his pitches. The Game Fixed Effects model improves this prediction a few fractions of a percent, but in either case, it's fair to say that most hitters know what Britton is about to throw. Nevertheless, Britton put up an otherworldly 0.54 ERA in 2016! Even if batters knew that sinker was on its way, making contact that leads to a hit is a whole other matter. 
 
