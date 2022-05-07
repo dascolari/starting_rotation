@@ -37,34 +37,37 @@ By modeling pitch prediction, we can learn what information is relevant to a pit
 In the following report will talk about why pithes are different, share evidence that pitchers have different strategies from at bat to at bat, and describe the engineering of our model, which is basically a trashcan .
 
 ## Pitches are different you dumb dumb idiot
+
 Harrison's graphs
 
-## Pichers be sequencing
-AB networks
 
-## Our Random Forrest 
-describe the features, describe the dream 
-Brief description of the features in each model
- - since I made the models, it might be easiest if I do this(david)
- - but generally, trashcan_1 is situation info, trashcan_2 is lagged pitches and event results, trashcan_3 is addition of "game level fixed effects" type info
- 
-Look at the tables generated in the appendix and write about any patterns you see. For example, some pitchers get better with each addition of features, some get better with the first addition but worse with the second addition, some get worse with each addition of features. 
-
-Also look at the by pitch performance. Seems like there's a tradeoff between accuracy with the pitcher's most frequent pitch and accuracy with some of the secondary pitches. Is there something about the pitchers that explains these patterns? (we probably can't say definitively why this is, but we can suggest reasons)
-
-
-### The Data
-(Feel free to relocate this to where it makes the most sense.)
+## The Data
 
 The data involved in this project consists of every pitch from the 2015 through the 2018 Major League Baseball (MLB) seasons. These four seasons contained nearly 3 million observations, and the data include categorization of 16 different types of pitches, the spin, speed, and location of each pitch, the game situation (score, runners on base, balls and strikes, etc.), information about the pitcher and batter, and the result of the at-bat. 
 
-(Gonna add a description of some of the built features here to make them easier to talk about in a later section)
+To this already rich data set, we add a few important features. Since each pitch is identified by an atbat id and a pitch number, we can add the previous pitch types as features to each pitch. For this model, we add categorical features for the previous two pitches. We also add the previous atbat's result as a feature.
 
-### Methodology
+Although information on each batter might be helpful for this modeling problem, as pitchers might have a specialized approach to facing each batter, we did not have easy access to this kind of player data. As an alternative, we add a factor variable indicating the position in the batting order the pitcher is facing. A team's best hitter tend to bat 3rd or 4th in the order, and a team's worst hitter tend to bat 8th and 9th, so batting order may be able to tell our model a lot about what pitch types a pitcher will throw. 
+
+Lastly, we add features for the game specific share of pitches that each of a pitcher's pitch types make up. This set of features is meant to capture the fact that what a pitcher has in his arsenal may change from game to game. Most games a pitcher might throw mostly four seam fastballs, but there might be "game specific fixed effects" that lead him to rely more on his secondary pitches. We'd like our model to be able to use this information in making its predictions.
+
+## Methodology
 
 (David, supplement these descriptions with further details as needed.)
 
 Given how difficult it is to get hits consistently at the major league level, having an idea an idea of what the opposing pitcher is about to throw would confer a significant advantage to the hitter. We endeavor to create a model that successfully predicts the next pitch a pitcher will throw in an at-bat, given the circumstances of the at-bat, the tendencies of the pitcher, and the progress of the game up to that point. Using three distinct random forest models, we derive a predictive approach that generally outperforms guessing that the pitcher will throw their most common pitch (often called "sitting on a pitch"), and in most cases, significantly exceeds this "sitting on a pitch" approach.
+
+### Background on Random Forest Models
+
+Random forests, much like actual forests, are an aggregation of individual trees. The below figure is a dendrogram, a graphical representation of a tree model that classifies [PITCHER X]'s pitch type. 
+
+[DENDROGRAM]
+
+The dendrogram intuitively depicts how tree models make predictions: through a series of binary decisions based on a selection of features that sort the data into groups of most likely outcomes.
+
+While trees are intuitive, a well performing model will add some layers of complexity that reduce over fitting. Bootstrap aggregating, or "bagging" involves taking $B$ bootstrapped samples of the original data and fitting a tree model to each one. Predictions are generated using a summary of the $B$ tree models. For a categorical outcome, each tree model contributes one vote and the outcome is classified by majority rule. 
+
+Random forests extend bagged trees by only allowing each individual tree to use $m$ of the total number of features, $p$. So bagging is equivalent to a random forest with $m = p$. Restricting the each tree to a subset of the total features decorrelates the individual tree models, reducing variance in the predictions and making it less likely that the model will over fit the data. For our random forest models, we use a common choice of feature size, $m \approx \sqrt p$.
 
 #### The Situational Model
 
@@ -90,7 +93,20 @@ Predictive power does not necessarily equate to hits. Enter Zack Britton, who le
 
 ## what it all means, probably nothing 
 
-implications for how hitters should approach thinking about predicting pitches. 
+What it all means: 
+- we've demonstrated that the game situation, previous pitches, previous result, batting order position, and game to game changes in a pitcher's "stuff" all help predict pitches
+- for some pitcher, all of these features are helpful. for others, using all of the features over fits
+- this modelling is not dierrctly useful to teams on a pitch to pitch level. it'd probably be considered cheating for an assistant coach to be sitting in the dugout with laptop inputting the situation and having the model spit back predictions. Baseball has already shown it is uncomfortable with certain levels of technology entering the game, adding machine learning would be overstepping no doubt. 
+- rather, what we've provided is a framework for hitters to analyze what kind of information is helpful in predicting a particular pitcher's pitch type. They can focus on the information that is important and ignore the rest. this will help them in building scouting reports on pitchers
+- as the Astros showed us all in 2017?, this is crucial
+
+(gonna try to make this coherent)
+Moreover: 
+- where our work might be useful on a pitch to pitch basis is with fan enjoyment experience. baseball has lost popularity in recent years, with Tv ratings on the decline and game attendance faltering as well. Surely, this decrease is due to the games slow pace and lack of entertainment value for the casual fan. after all, the game grinds to a halt after each pitch, pausing for players and coaches to relay signs, adjust equipment, and mentally prepare for the next pitch
+
+but for baseball enthusiasts, this segmented gameplay is part of the fun. After each pitch, it is perfectly observable to all players involved what the situation is. The "game within the game" is figuring out how to best respond to each state of the game. And a big part of that is the batter trying to guess what pitch is coming and the pitcher trying to throw a pitch that the batter might not expect. 
+
+our modeling tool can be a tool to let fans watching at home in on the game within the game, which is why we've built our shiny web app. Our app allows a fan to input a situation and get pitch prediction percentages in return. This will vastly improve porch beers with the boys while listening to America's past time on the radio as well as Friday Night baseball on the couch with Dom's
 
 ## Appendix
 ```{r tables, include=TRUE}

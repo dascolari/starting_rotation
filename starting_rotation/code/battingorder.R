@@ -37,7 +37,7 @@ foreach(id = 1:30) %do% {
   pitcher_list = split(x=pitcher_net$pitch_type, f=pitcher_net$ab_id)
   pitcher_trans = as(pitcher_list, "transactions")
   pitcher_rules = apriori(pitcher_trans, 
-                      parameter=list(support=.01, confidence=.5, maxlen=5))
+                      parameter=list(support=.01, confidence=.5, maxlen=3))
 
   fname_rules <- paste0("pitcher_rules", id, ".graphml")
   saveAsGraph(pitcher_rules, file = file.path(path, 'output', 'models', fname_rules))

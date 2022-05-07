@@ -181,24 +181,24 @@ pre code {
 <h2>Pitches are different you dumb dumb idiot</h2>
 <p>Harrison’s graphs</p>
 </div>
-<div id="pichers-be-sequencing" class="section level2">
-<h2>Pichers be sequencing</h2>
-<p>AB networks</p>
-</div>
-<div id="our-random-forrest" class="section level2">
-<h2>Our Random Forrest</h2>
-<p>describe the features, describe the dream Brief description of the features in each model - since I made the models, it might be easiest if I do this(david) - but generally, trashcan_1 is situation info, trashcan_2 is lagged pitches and event results, trashcan_3 is addition of “game level fixed effects” type info</p>
-<p>Look at the tables generated in the appendix and write about any patterns you see. For example, some pitchers get better with each addition of features, some get better with the first addition but worse with the second addition, some get worse with each addition of features.</p>
-<p>Also look at the by pitch performance. Seems like there’s a tradeoff between accuracy with the pitcher’s most frequent pitch and accuracy with some of the secondary pitches. Is there something about the pitchers that explains these patterns? (we probably can’t say definitively why this is, but we can suggest reasons)</p>
-<div id="the-data" class="section level3">
-<h3>The Data</h3>
-<p>(Feel free to relocate this to where it makes the most sense.)</p>
+<div id="the-data" class="section level2">
+<h2>The Data</h2>
 <p>The data involved in this project consists of every pitch from the 2015 through the 2018 Major League Baseball (MLB) seasons. These four seasons contained nearly 3 million observations, and the data include categorization of 16 different types of pitches, the spin, speed, and location of each pitch, the game situation (score, runners on base, balls and strikes, etc.), information about the pitcher and batter, and the result of the at-bat.</p>
+<p>To this already rich data set, we add a few important features. Since each pitch is identified by an atbat id and a pitch number, we can add the previous pitch types as features to each pitch. For this model, we add categorical features for the previous two pitches. We also add the previous atbat’s result as a feature.</p>
+<p>Although information on each batter might be helpful for this modeling problem, as pitchers might have a specialized approach to facing each batter, we did not have easy access to this kind of player data. As an alternative, we add a factor variable indicating the position in the batting order the pitcher is facing. A team’s best hitter tend to bat 3rd or 4th in the order, and a team’s worst hitter tend to bat 8th and 9th, so batting order may be able to tell our model a lot about what pitch types a pitcher will throw.</p>
+<p>Lastly, we add features for the game specific share of pitches that each of a pitcher’s pitch types make up. This set of features is meant to capture the fact that what a pitcher has in his arsenal may change from game to game. Most games a pitcher might throw mostly four seam fastballs, but there might be “game specific fixed effects” that lead him to rely more on his secondary pitches. We’d like our model to be able to use this information in making its predictions.</p>
 </div>
-<div id="methodology" class="section level3">
-<h3>Methodology</h3>
+<div id="methodology" class="section level2">
+<h2>Methodology</h2>
 <p>(David, supplement these descriptions with further details as needed.)</p>
 <p>Given how difficult it is to get hits consistently at the major league level, having an idea an idea of what the opposing pitcher is about to throw would confer a significant advantage to the hitter. We endeavor to create a model that successfully predicts the next pitch a pitcher will throw in an at-bat, given the circumstances of the at-bat, the tendencies of the pitcher, and the progress of the game up to that point. Using three distinct random forest models, we derive a predictive approach that generally outperforms guessing that the pitcher will throw their most common pitch (often called “sitting on a pitch”), and in most cases, significantly exceeds this “sitting on a pitch” approach.</p>
+<div id="background-on-random-forest-models" class="section level3">
+<h3>Background on Random Forest Models</h3>
+<p>Random forests, much like actual forests, are an aggregation of individual trees. The below figure is a dendrogram, a graphical representation of a tree model that classifies [PITCHER X]’s pitch type.</p>
+<p>[DENDROGRAM]</p>
+<p>The dendrogram intuitively depicts how tree models make predictions: through a series of binary decisions based on a selection of features that sort the data into groups of most likely outcomes.</p>
+<p>While trees are intuitive, a well performing model will add some layers of complexity that reduce over fitting. Bootstrap aggregating, or “bagging” involves taking <span class="math inline">\(B\)</span> bootstrapped samples of the original data and fitting a tree model to each one. Predictions are generated using a summary of the <span class="math inline">\(B\)</span> tree models. For a categorical outcome, each tree model contributes one vote and the outcome is classified by majority rule.</p>
+<p>Random forests extend bagged trees by only allowing each individual tree to use <span class="math inline">\(m\)</span> of the total number of features, <span class="math inline">\(p\)</span>. So bagging is equivalent to a random forest with <span class="math inline">\(m = p\)</span>. Restricting the each tree to a subset of the total features decorrelates the individual tree models, reducing variance in the predictions and making it less likely that the model will over fit the data. For our random forest models, we use a common choice of feature size, <span class="math inline">\(m \approx \sqrt p\)</span>.</p>
 <div id="the-situational-model" class="section level4">
 <h4>The Situational Model</h4>
 <p>The first of our three random forest models uses information readily available in the at-bat to predict the upcoming pitch. The features involved here include the ball-strike count, opposing batter’s stance, inning, how many pitches thrown in the at-bat so far, the game score, and the runners on base.</p>
@@ -216,12 +216,15 @@ pre code {
 <div id="results" class="section level2">
 <h2>Results</h2>
 <p>Most models improved on the guess of the upcoming pitch when compared to the “sitting on the pitch” (called “sitONE”) as seen in [TABLE/APPENDIX]. Consider the case of Chris Sale. Sale is a perennial All-Star, and finished top-5 in Cy Young (MLB’s most valuable pitcher award) votes each year of our data. If a batter were to look for his most common pitch (the two-seam fastball), he would would only be right about one third of the time. However, Sale becomes increasingly more predictable as the model incorporates more features. The Situational Model and the Lagged Model predict his next pitch at 37% and 38% respectively. Still, the Game Fixed Effects Model predicts his next pitch with an out-of-sample accuracy of nearly 46%, a jump of about 13%. There isn’t a hitter in baseball who wouldn’t want to know Sale’s next pitch with a 13% increase in accuracy!</p>
-<p>(Do these numbers need to be responsive to different train/test splits?)</p>
+<p>(Do these numbers need to be responsive to different train/test splits?) I think it’d be nice, but I think it counts as unfeasible for our computing power purposes since running the models once takes me about 30 minutes for me at least. But for interpretation purposes, small difference in performance might not be stable results so they shouldn’t be read into too much.</p>
 <p>Predictive power does not necessarily equate to hits. Enter Zack Britton, who led the league in saves during the 2016 season. Britton is nearly a one-pitch pitcher, throwing sinkers on 89.7% of his pitches. The Game Fixed Effects model improves this prediction a few fractions of a percent, but in either case, it’s fair to say that most hitters know what Britton is about to throw. Nevertheless, Britton put up an otherworldly 0.54 ERA in 2016! Even if batters knew that sinker was on its way, making contact that leads to a hit is a whole other matter.</p>
 </div>
 <div id="what-it-all-means-probably-nothing" class="section level2">
 <h2>what it all means, probably nothing</h2>
-<p>implications for how hitters should approach thinking about predicting pitches.</p>
+<p>What it all means: - we’ve demonstrated that the game situation, previous pitches, previous result, batting order position, and game to game changes in a pitcher’s “stuff” all help predict pitches - for some pitcher, all of these features are helpful. for others, using all of the features over fits - this modelling is not dierrctly useful to teams on a pitch to pitch level. it’d probably be considered cheating for an assistant coach to be sitting in the dugout with laptop inputting the situation and having the model spit back predictions. Baseball has already shown it is uncomfortable with certain levels of technology entering the game, adding machine learning would be overstepping no doubt. - rather, what we’ve provided is a framework for hitters to analyze what kind of information is helpful in predicting a particular pitcher’s pitch type. They can focus on the information that is important and ignore the rest. this will help them in building scouting reports on pitchers - as the Astros showed us all in 2017?, this is crucial</p>
+<p>(gonna try to make this coherent) Moreover: - where our work might be useful on a pitch to pitch basis is with fan enjoyment experience. baseball has lost popularity in recent years, with Tv ratings on the decline and game attendance faltering as well. Surely, this decrease is due to the games slow pace and lack of entertainment value for the casual fan. after all, the game grinds to a halt after each pitch, pausing for players and coaches to relay signs, adjust equipment, and mentally prepare for the next pitch</p>
+<p>but for baseball enthusiasts, this segmented gameplay is part of the fun. After each pitch, it is perfectly observable to all players involved what the situation is. The “game within the game” is figuring out how to best respond to each state of the game. And a big part of that is the batter trying to guess what pitch is coming and the pitcher trying to throw a pitch that the batter might not expect.</p>
+<p>our modeling tool can be a tool to let fans watching at home in on the game within the game, which is why we’ve built our shiny web app. Our app allows a fan to input a situation and get pitch prediction percentages in return. This will vastly improve porch beers with the boys while listening to America’s past time on the radio as well as Friday Night baseball on the couch with Dom’s</p>
 </div>
 <div id="appendix" class="section level2">
 <h2>Appendix</h2>
