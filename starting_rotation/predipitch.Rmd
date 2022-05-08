@@ -148,10 +148,68 @@ The models are generated with a train/test split and then evaluated for the out-
 
 #### The Situational Model
 
-The first of our three random forest models uses information readily available in the at-bat to predict the upcoming pitch. The features involved here include the ball-strike count, opposing batter's stance, inning, how many pitches thrown in the at-bat so far, the game score, and the runners on base. This is the most interpretable model, since it is composed of the factors that are generally considered most relevant and well-known by players and coaches in the moment. Consider, for example, the following tree as an example of what the random forest is doing for [insert pitcher and model here]:
+The first of our three random forest models uses information readily available in the at-bat to predict the upcoming pitch. The features involved here include the ball-strike count, opposing batter's stance, inning, how many pitches thrown in the at-bat so far, the game score, and the runners on base. This is the most interpretable model, as it is composed of the factors that are generally considered most relevant and well-known by players and coaches in the moment. As random forests are an aggregation of individual trees, it can be illustrative to look at a single tree to get a sense for how decisions are being made at various nodes. Consider, for example, the following tree as an example of what the random forest is doing for pitcher Felix Hernandez. 
 
-[model]
+```{r}
 
+## Load in data
+set.seed(117) #set seed for image replication 
+
+load(file.path(path, "output", "pitches_import.RData"))
+
+## Felix Hernandez Example ID 2
+
+id = 2
+
+fname_pitcher <- paste0("pitcher", id, ".Rds")
+load(file = file.path(path, 'output', 'pitchers', fname_pitcher))
+
+fname_factor <- paste0("pitcher_factor", id, ".RDs")
+load(file = file.path(path, 'output', 'pitchers', fname_factor))
+
+pitcher_first <- names$first_name[id]
+pitcher_last <- names$last_name[id]
+
+## Train / Test
+
+pitcher_split =  initial_split(pitcher, prop=0.8)
+pitcher_train = training(pitcher_split)
+pitcher_test  = testing(pitcher_split)
+
+## Single tree and 1SE Prune
+
+pitcher.tree = rpart(pitch_type ~ 
+                       inning + 
+                       b_count + 
+                       s_count +
+                       pitch_num +
+                       stand +
+                       on_1b + 
+                       on_2b + 
+                       on_3b +
+                       outs +
+                       p_score +
+                       b_score,
+                     data=pitcher_train,
+                     control = rpart.control(cp = .005, minsplit = 30))
+
+prune_1se = function(my_tree) {
+  out = as.data.frame(my_tree$cptable)
+  thresh = min(out$xerror + out$xstd)
+  cp_opt = max(out$CP[out$xerror <= thresh])
+  prune(my_tree, cp=cp_opt)
+}
+
+pitcher.tree_prune = prune_1se(pitcher.tree)
+
+## Plot
+
+rpart.plot(pitcher.tree_prune, type=4, extra=1)
+
+
+```
+
+Hernandez is a pitcher with a diverse arsenal of pitches. As one can see, the predictive model analyzes factors about the game situation to indicate the next pitch. It considers, for example, the count on the batter and whether the batter stands left or right. After running through the branches and nodes with binary decisions based on the in-game situation, a prediction about the next pitch is made at the bottom of the tree. The random forest takes a bootstrap aggregate of trees like this one, but a single tree helps us see an example of the predictive process. 
 
 #### The Lagged Model
 
