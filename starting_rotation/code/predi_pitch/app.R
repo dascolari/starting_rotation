@@ -130,7 +130,7 @@ server <- function(input, output) {
     
     pitcher$pitch_type <- factor(pitcher$pitch_type, factor_types)
     pitcher_predi <- pitcher %>% 
-      mutate(pitchhat_trashcan = predict(trashcan_1, pitcher))
+      mutate(pitchhat_trashcan = predict(trashcan_3, pitcher))
     pitcher_predi$pitchhat_trashcan = factor(pitcher_predi$pitchhat_trashcan, factor_types)
     
     sit_data = pitcher_predi
