@@ -120,7 +120,18 @@ ggplot(plot_all)+
 ```
 
 ## Pichers be sequencing
-AB networks
+```{r}
+
+load(file = file.path(path, 'output', 'tables', 'kershaw_sequence.RData'))
+pitch_sequence
+
+```
+
+```{r}
+
+just_walked
+
+```
 
 ## The Data
 The data involved in this project consists of every pitch from the 2015 through the 2018 Major League Baseball (MLB) seasons. These four seasons contained nearly 3 million observations, and the data include categorization of 16 different types of pitches, the spin, speed, and location of each pitch, the game situation (score, runners on base, balls and strikes, etc.), information about the pitcher and batter, and the result of the at-bat. 
