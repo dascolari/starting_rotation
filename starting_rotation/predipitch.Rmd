@@ -2,7 +2,7 @@
 title: "Predi-Pitch: Snack on This Curve Whenever You Want"
 author: "David Scolari, Harrison Snell, Brandon Williams"
 date: "4/13/2022"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -371,11 +371,16 @@ These predictions can be generated for any pitcher, and we invite you to explore
 
 ## Results
 
-In [TABLE/APPENDIX], we publish our models' results for 30 pitchers from Major League Baseball. These pitchers are generally considered some of the best in the business, but there are some pitchers from outside the top tier for completeness. We also note that the model is easily adaptable to any pitcher who threw between 2015 and 2018. In [TABLE/APPENDIX], we present the pitching profiles of the 30 pitchers based on the style of their pitches and the frequency that they are thrown.  
+In [TABLE/APPENDIX], we publish our models' results for 30 pitchers from Major League Baseball. These pitchers are generally considered some of the best in the business, but there are some pitchers from outside the top tier for completeness. We also note that the model is easily adaptable to any pitcher who threw between 2015 and 2018. In [TABLE/APPENDIX], we present the pitching profiles of the 30 pitchers based on the style of their pitches and the frequency that they are thrown.
 
 To measure our models' effectiveness, we compare them to the most-common pitch thrown by the pitcher (called "sitONE") and to each other. The out-of-sample performance of each model is presented in "trashcans" 1 to 3 (our sincerest apologies to Astros fans for the name). 
 
 Most models improved on the guess of the upcoming pitch when compared to the "sitting on the pitch" as seen in [TABLE/APPENDIX]. Consider the case of Chris Sale. Sale is a perennial All-Star, and finished top-5 in Cy Young (MLB's most valuable pitcher award) votes each year of our data. If a batter were to look for his most common pitch (the two-seam fastball), he would would only be right about one third of the time. However, Sale becomes increasingly more predictable as the model incorporates more features. The Situational Model and the Lagged Model predict his next pitch at 37% and 38% respectively. Still, the Game Fixed Effects Model predicts his next pitch with an out-of-sample accuracy of nearly 46%, a jump of about 13%. There isn't a hitter in baseball who wouldn't want to know Sale's next pitch with a 13% increase in accuracy!
+
+
+```{r}
+by_pitch_performance_Jacob_deGrom
+```
 
 (Do these numbers need to be responsive to different train/test splits?)
 I think it'd be nice, but I think it counts as unfeasible for our computing power purposes since running the models once takes me about 30 minutes for me at least. But for interpretation purposes, small difference in performance might not be stable results so they shouldn't be read into too much. 
@@ -405,10 +410,9 @@ but for baseball enthusiasts, this segmented gameplay is part of the fun. After 
 
 our modeling tool can be a tool to let fans watching at home in on the game within the game, which is why we've built our shiny web app. Our app allows a fan to input a situation and get pitch prediction percentages in return. This will vastly improve porch beers with the boys while listening to America's past time on the radio as well as Friday Night baseball on the couch with Dom's
 
-## Appendix
-```{r tables, include=TRUE}
-overall_performance_all
+## Appendix A
 
+```{r}
 types_Trevor_Rosenthal
 types_Felix_Hernandez
 types_Chris_Archer
@@ -439,7 +443,17 @@ types_Michael_Wacha
 types_Chris_Sale
 types_Zack_Greinke
 types_Yu_Darvish
+```
 
+## Apendix B
+
+```{r tables, include=TRUE}
+overall_performance_all
+```
+
+## Apendix C
+
+```{r}
 by_pitch_performance_Trevor_Rosenthal
 by_pitch_performance_Felix_Hernandez
 by_pitch_performance_Chris_Archer
@@ -470,5 +484,4 @@ by_pitch_performance_Michael_Wacha
 by_pitch_performance_Chris_Sale
 by_pitch_performance_Zack_Greinke
 by_pitch_performance_Yu_Darvish
-
 ```
