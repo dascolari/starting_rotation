@@ -227,6 +227,148 @@ The second random forest builds upon the features selected in the Situational Mo
 
 The third and final random forest uses nearly every feature from the dataset to control for all possible scenarios and variations in the feature matrix. This means that it not only considers all the factors included in the other two models, but also includes what the pitcher's game has looked like so far; that is, it takes into account the pitch choices as a percent of the overall pitches in the game up to that point. (Is this a correct reading?) So if the pitcher is leaning heavily on the slider that day, this model will incorporate that pattern. 
 
+### Pitch Prediction
+
+Now that we have our models constructed, how does it work? Let's return to Clayton Kershaw in a real game situation to find out. Let's say the count is one ball, one strike, and there is one out. Kershaw is facing a right-handed batter. What does the Trash Can model say that Kershaw will throw here? 
+
+``` {r}
+
+# Enter the game situation 
+
+id = 12 #Kershaw
+stance = "R"
+strikes = 1
+balls = 1
+out = 1
+
+# Call the pitcher's dataset 
+
+load(file.path(path, "output", "pitches_import.RData"))
+
+fname_model <- paste0("trashcans", id, ".RData")
+load(file = file.path(path, 'output', 'models', fname_model))
+
+fname_pitcher <- paste0("pitcher", id, ".Rds")
+load(file = file.path(path, 'output', 'pitchers', fname_pitcher))
+
+fname_factor <- paste0("pitcher_factor", id, ".RDs")
+load(file = file.path(path, 'output', 'pitchers', fname_factor))
+
+pitcher_first <- names$first_name[id]
+pitcher_last <- names$last_name[id]
+
+# affix the model prediction results to the pitches dataset
+
+pitcher$pitch_type <- factor(pitcher$pitch_type, factor_types)
+pitcher_predi <- pitcher %>% 
+  mutate(pitchhat_trashcan = predict(trashcan_3, pitcher))
+pitcher_predi$pitchhat_trashcan = factor(pitcher_predi$pitchhat_trashcan, factor_types)
+
+# filter by game situation
+
+  pitcher_result <- pitcher_predi %>% 
+    filter(
+      stand == stance &          
+        s_count == strikes &
+           b_count == balls &
+           outs == out
+           )
+
+# summarize the predictions and the actual results 
+  
+  pitcher_guess <- pitcher_result %>% 
+    group_by(pitchhat_trashcan) %>% 
+    summarize(prediction = n()) %>% 
+    mutate(percent = prediction / sum(prediction)) %>% 
+    rename(pitch_type = pitchhat_trashcan)
+  
+  pitcher_real <-  pitcher_result %>% 
+    group_by(pitch_type) %>% 
+    summarize(actual = n()) %>% 
+    mutate(actual_percent = actual / sum(actual))
+
+  situation <- merge(pitcher_guess, pitcher_real)
+
+  situation <-situation %>% 
+    arrange(desc(percent))
+  
+situation  
+
+```
+
+The model says that there's about a third chance that he will throw a slider, a third chance he will throw a fastball, and a third chance he will throw a curveball. Obviously, this is a difficult predicament for a hitter, but the model itself did pretty well! We slightly overpredict the chance of a slider and a fastball, and slightly underpredict the curveball. 
+
+What if we change the situation again? Now say it's the first pitch of an at-bat with two outs against a lefty. 
+
+``` {r}
+
+# Enter the game situation 
+
+id = 12
+stance = "L"
+strikes = 0
+balls = 0
+out = 2
+
+# Call the pitcher's dataset 
+
+load(file.path(path, "output", "pitches_import.RData"))
+
+fname_model <- paste0("trashcans", id, ".RData")
+load(file = file.path(path, 'output', 'models', fname_model))
+
+fname_pitcher <- paste0("pitcher", id, ".Rds")
+load(file = file.path(path, 'output', 'pitchers', fname_pitcher))
+
+fname_factor <- paste0("pitcher_factor", id, ".RDs")
+load(file = file.path(path, 'output', 'pitchers', fname_factor))
+
+pitcher_first <- names$first_name[id]
+pitcher_last <- names$last_name[id]
+
+# affix the model prediction results to the pitches dataset
+
+pitcher$pitch_type <- factor(pitcher$pitch_type, factor_types)
+pitcher_predi <- pitcher %>% 
+  mutate(pitchhat_trashcan = predict(trashcan_3, pitcher))
+pitcher_predi$pitchhat_trashcan = factor(pitcher_predi$pitchhat_trashcan, factor_types)
+
+# filter by game situation
+
+  pitcher_result <- pitcher_predi %>% 
+    filter(
+      stand == stance &          
+        s_count == strikes &
+           b_count == balls &
+           outs == out
+           )
+
+# summarize the predictions and the actual results 
+  
+  pitcher_guess <- pitcher_result %>% 
+    group_by(pitchhat_trashcan) %>% 
+    summarize(prediction = n()) %>% 
+    mutate(percent = prediction / sum(prediction)) %>% 
+    rename(pitch_type = pitchhat_trashcan)
+  
+  pitcher_real <-  pitcher_result %>% 
+    group_by(pitch_type) %>% 
+    summarize(actual = n()) %>% 
+    mutate(actual_percent = actual / sum(actual))
+
+  situation <- merge(pitcher_guess, pitcher_real)
+
+  situation <-situation %>% 
+    arrange(desc(percent))
+  
+situation  
+
+```
+
+Recall that we saw that Kershaw loves to throw a fastball on the first pitch, and indeed our model predicts that (at a slightly higher rate than is actually observed.) So if you are a left-handed hitter coming into the first pitch of an at-bat, it's probably a good idea to look for a fastball.
+
+These predictions can be generated for any pitcher, and we invite you to explore in-game situations with our pitchers in the Shiny app (link here?). 
+
 ## Results
 
 In [TABLE/APPENDIX], we publish our models' results for 30 pitchers from Major League Baseball. These pitchers are generally considered some of the best in the business, but there are some pitchers from outside the top tier for completeness. We also note that the model is easily adaptable to any pitcher who threw between 2015 and 2018. In [TABLE/APPENDIX], we present the pitching profiles of the 30 pitchers based on the style of their pitches and the frequency that they are thrown.  
