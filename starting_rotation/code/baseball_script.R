@@ -351,7 +351,7 @@ load("C:/Users/Student/Documents/School/University of Texas-Austin/Classes/Data 
 by_pitch_performance_Trevor_Rosenthal
 
 
-
+player_names <- read.csv(file.path(path, "data","raw","archive","archive","player_names.csv"))
 
 
 #### Markdown Code
@@ -363,7 +363,6 @@ harrison_path = "C:/Users/Student/Documents/School/University of Texas-Austin/Cl
 
 load(file.path(path, "output", "pitches_import.RData"))
 
-# {r, render= lemon_print}
 pitch_sum = pitches %>%
   filter(pitch_type != "") %>%
   filter(pitch_type != "IN")%>%
@@ -372,11 +371,14 @@ pitch_sum = pitches %>%
   group_by(pitch_type)%>%
   summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
 
-pitch_sum
+pitch_sum = pitch_sum %>%
+  mutate_if(is.numeric,round, digits=3)
 
 plot_data = pitches %>%
   filter(pitch_type != "") %>%
   filter(pitch_type != "IN")%>%
+  filter(pitch_type != "UN")%>%
+  filter(pitch_type != "FA")%>%
   dplyr::select(pitcher_id,pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)
 
 plot_data$pitch_type = as.factor(plot_data$pitch_type)
@@ -387,9 +389,6 @@ plot_archer = plot_data%>%
 plot_arrieta = plot_data %>%
   filter(pitcher_id == 453562)
 
-plot_greinke = plot_data %>%
-  filter(pitcher_id == 425844)
-
 ggplot(plot_archer)+
   geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)
 
@@ -397,20 +396,38 @@ ggplot(plot_archer)+
   geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)
 
 ggplot(plot_arrieta)+
-  geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)
+  geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)+
+  ggtitle("Spin Rate and Direction for Jake Arrieta's Pitches")
 
 ggplot(plot_arrieta)+
-  geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)
+  geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)+
+  ggtitle("Break Angle and Length for Jake Arrieta's Pitches")
 
-ggplot(plot_greinke)+
-  geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)
-
-ggplot(plot_greinke)+
-  geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)
 
 plot_all = plot_data%>%
-  filter(pitcher_id == 502042 || pitcher_id == 453562 || pitcher_id == 425844)
+  filter(pitcher_id %in% c(502042,453562))
 
 ggplot(plot_all)+
-  geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)
+  geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)
+
+ggplot(plot_data)+
+  geom_density(aes(x=start_speed), fill="blue")+
+  ggtitle("Distribution of Start Speeds across Pitches")+
+  facet_wrap(~pitch_type)
+
+ggplot(plot_data)+
+  geom_density(aes(x=break_length), fill="red")+
+  ggtitle("Distribution of Break Length across Pitches")+
+  facet_wrap(~pitch_type)
+
+
+
+
+
+
+
+
+
+
+
 

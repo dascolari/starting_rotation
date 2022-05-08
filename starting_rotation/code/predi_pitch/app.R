@@ -1,4 +1,6 @@
-# path = "C:/Users/Student/Documents/School/University of Texas-Austin/Classes/Data Mining/starting_rotation/starting_rotation"
+library(here)
+here::i_am("code/dugout.R")
+path <- here()
 
 source(file.path(path, 'code', 'dugout.R'))
 
@@ -18,7 +20,7 @@ foreach(id = 1:30) %do% {
   load(file = file.path(path, 'output', 'tables', fname_bypitch))
 }
 
-player_names <- read.csv("~/School/University of Texas-Austin/Classes/Data Mining/starting_rotation/starting_rotation/data/raw/archive/archive/player_names.csv")
+player_names <- read.csv(file.path(path, "data","raw","archive","archive","player_names.csv"))
 load(file.path(path, "output", "pitches_import.RData"))
 
 name_list = c(453562,506433,519455,518516,519242,446372,456034,
