@@ -21,6 +21,7 @@ library(pdp)
 library(arules)
 library(arulesViz)
 library(shiny)
+library(lemon)
 
 
 here::i_am("code/dugout.R")
