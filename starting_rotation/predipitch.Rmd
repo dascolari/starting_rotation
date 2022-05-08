@@ -114,12 +114,18 @@ Mostly as an exposition into our data, we found the graphs of distributions of b
 
 
 ## Pichers be sequencing
+Naturally, a pitcher will have a generally well established "arsenal" if pitch types that he throws on a regular basis, so a batter will have an idea of types of pitches he is likely to face and the relative frequency at which he will face them. However, by being aware of the game situation, a batter might have a better idea of the type of pitch he is likely to see next. The following section illustrates how this works in practice. 
+
+The below table lists the distribution of pitch types that Clayton Kershaw throws conditional on a few different game situation. We observe that Kershaw throws about 48% four seam fastballs across all at bats in our data set. However, if we only look at the first pitch, we see that he throws about 68% four seam fastballs. Following fastballs, his frequency of sliders and curves increases significantly. In two strikes situations, he tends to throw a lot of sliders and relied more on his curve relative to other counts. With three balls, Kershaw relies on four seam fastballs and sliders (probably his two most reliable pitches). To the "heart" of the order, or the three and four hitters in the batting order, he ups the frequency of sliders and curves and throws less four seamers. To the bottom of the order (eight and nine hitters), he throws more four seamers. He also throws a lot of fastballs to lefties, probably because lefties hit off left handed pitchers with a lower batting average than righties do. 
+
 ```{r}
 
 load(file = file.path(path, 'output', 'tables', 'kershaw_sequence.RData'))
 pitch_sequence
 
 ```
+
+We can further improve the specificity of our distribution by interacting elements of a situation. For example, the below table looks at what Kershaw throws with his first pitch after a walk to the clean-up hitter (fourth in the order) and the eight and ninth place hitters. We see that after a walk, if Kershaw is facing the bottom of the order, he does not mess around very much with off speed pitches and relies heavily on the four seam. However, to clean-up hitters, Kershaw still mixes in a large share of sliders, clearly balancing the need to throw strikes after a walk with respect for the offensive threat of the clean-up hitter. These kinds of interactions are exactly what our random forest aims to leverage to make it's predictions. 
 
 ```{r}
 
