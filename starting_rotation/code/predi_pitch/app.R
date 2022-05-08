@@ -186,7 +186,7 @@ server <- function(input, output) {
     situation = situation %>%
       arrange(desc(percent))
     situation
-  })
+  }, caption = "Table of Prediction Results for a Given Situation")
   
   output$pitch_sum <- renderTable({
     pitch_sum <- selected_pitcher()
@@ -194,7 +194,7 @@ server <- function(input, output) {
       dplyr::select(pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)%>%
       group_by(pitch_type)%>%
       summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
-  })
+  }, caption = "Averages of Pitch Characteristics for Selected Pitcher")
   
   #output$situation_summary <- renderTable({
   #  situation
@@ -203,13 +203,15 @@ server <- function(input, output) {
   output$spin_plot <- renderPlot({
     spins <- selected_pitcher()
     ggplot(spins)+
-      geom_point(aes(x=spin_dir,y=spin_rate,color=pitch_type),alpha=.2)
+      geom_point(aes(x=spin_dir,y=spin_rate,color=pitch_type),alpha=.2)+
+      ggtitle("Spin Rate and Direction by Pitch Type")
   })
   
   output$break_plot <- renderPlot({
     breaking <- selected_pitcher()
     ggplot(breaking)+
-      geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)
+      geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)+
+      ggtitle("Break Angle and Length by Pitch Type")
   })
   
 }
