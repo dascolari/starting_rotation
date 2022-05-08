@@ -1,6 +1,4 @@
-library(tidyverse)
-library(shiny)
-library(kableExtra)
+# path = "C:/Users/Student/Documents/School/University of Texas-Austin/Classes/Data Mining/starting_rotation/starting_rotation"
 
 source(file.path(path, 'code', 'dugout.R'))
 
@@ -20,12 +18,8 @@ foreach(id = 1:30) %do% {
   load(file = file.path(path, 'output', 'tables', fname_bypitch))
 }
 
-pitch_ab_2015 <- read.csv("~/School/University of Texas-Austin/Classes/Data Mining/pitch_ab_2015.csv")
 player_names <- read.csv("~/School/University of Texas-Austin/Classes/Data Mining/starting_rotation/starting_rotation/data/raw/archive/archive/player_names.csv")
-load("C:/Users/Student/Documents/School/University of Texas-Austin/Classes/Data Mining/starting_rotation/starting_rotation/output/pitches_import.RData")
-
-physics = pitch_ab_2015 %>%
-  dplyr::select(pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)
+load(file.path(path, "output", "pitches_import.RData"))
 
 name_list = c(453562,506433,519455,518516,519242,446372,456034,
               544931,453286,433587,477132,594798,502042,425844,
@@ -51,7 +45,7 @@ names(test_list) = c(starters[,4])
 ui <- pageWithSidebar(
   
   # App title ----
-  headerPanel("Fuck da Astros"),
+  headerPanel("Pitch Prediction"),
   
   # Sidebar panel for inputs ----
   sidebarPanel(
@@ -89,13 +83,13 @@ ui <- pageWithSidebar(
   # Main panel for displaying outputs ----
   mainPanel(
     
+    tableOutput("situation"),
+    
     tableOutput("pitch_sum"),
     
     plotOutput(outputId = "spin_plot", height = "300px"),
     
-    plotOutput("break_plot", height = "300px"),
-    
-    tableOutput("situation")
+    plotOutput("break_plot", height = "300px")
     
   )
 )
@@ -187,6 +181,8 @@ server <- function(input, output) {
       mutate(success_trashcan = ifelse(pitch_type == pitchhat_trashcan, 1, 0))
     
     situation <- merge(pitcher_guess, pitcher_real)
+    situation = situation %>%
+      arrange(desc(percent))
     situation
   })
   

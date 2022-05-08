@@ -20,5 +20,9 @@ library(groupdata2)
 library(pdp)
 library(arules)
 library(arulesViz)
-  
-path <- here()
+library(shiny)
+
+
+here::i_am("code/dugout.R")
+
+path = here()
