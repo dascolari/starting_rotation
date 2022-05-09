@@ -38,9 +38,9 @@ Hitting a baseball has been shown to be one of the most difficult tasks in all o
 
 Hitters will use a variety of information to inform their prediction of an upcoming pitch, including scouting reports that teams build coming into a game, situational context, memory of the previous few pitches, and game specific tendencies of a pitcher. In this project, we attempt to model this decision making process with a random forest pitch type classifier. We use pitch level data from the 2015-2018 seasons to predict pitch types for 30 different pitchers who played during that type period. 
 
-Our model aims contributes to the baseball world in the following ways. First, by testing how different sets of features perform at classifying out of sample pitch types, we see that some features are more important for certain pitchers than they are for others. This will help teams focus on the important information when building scouting reports going into a game against a certain pitcher. 
+Our model aims to contribute to the baseball world in the following ways. First, by testing how different sets of features perform at classifying out of sample pitch types, we see that some features are more important for certain pitchers than they are for others. This will help teams focus on the important information when building scouting reports going into a game against a certain pitcher. 
 
-Second, we aim to make the results of our pitch type predictor accessible to baseball fans in hopes that it can augment their viewing experience. For many enthusiasts, strategizing along side the players from pitch to pitch, guessing both what the pitcher is going to throw as well as what the batter's strategy will be, is the most enjoyable part of the game. However, among more casual fans, baseball has the reputation for being "boring" to watch, largely due to the pauses between every pitch, during which players sometimes take 30 or more seconds to relay signs and perform ritualistic jersey adjustments, bat taps, and other manor of baseball superstition. To make this aspect of baseball more palatable to fans, we built an R Shiny web application that allows them to input game situations and call our model's pitch type predictions in real time, allowing them to take part in the "game within the game" of baseball. 
+Second, we aim to make the results of our pitch type predictor accessible to baseball fans in hopes that it can augment their viewing experience. For many enthusiasts, strategizing along side the players from pitch to pitch, guessing both what the pitcher is going to throw as well as what the batter's strategy will be, is the most enjoyable part of the game. However, among more casual fans, baseball has the reputation for being "boring" to watch, largely due to the pauses between every pitch, during which players sometimes take 30 or more seconds to relay signs and perform ritualistic jersey adjustments, bat taps, and other manner of baseball superstitions. To make this aspect of baseball more palatable to fans, we built an R Shiny web application that allows them to input game situations and call our model's pitch type predictions in real time, allowing them to take part in the "game within the game" of baseball. 
 
 This report proceeds as follows. First we analyze the physical attributes of the pitches that our 30 selected pitchers throw, making the case that it is indeed in the batters best interest to have an idea of how a particular pitch is going to move once it leave the pitcher's hand. Second, we show some evidence that pitchers do adopt different strategies for different game situations. We then describe the rich, pitch level data set we use for this analysis. Finally, we discuss our random forest classifier and the results it produces. 
 
@@ -49,22 +49,22 @@ This report proceeds as follows. First we analyze the physical attributes of the
 While much of our analysis can be reproduced directly from the RMarkdown file, there are several scripts in our Github that are called at various times. In order to have 100% reproducibility, the following load order can be used:
 
 The following scripts allow the writeup to be reproduced:
-- dugout.R (similar to a include.R) loads the necessary libraries and establishes the file path
--  **import.R** converts the enormous dataset into a more manageable subset of MLB pitchers
--  **pitchers.R** pre-processes the data so that it is easily fed into the predipitch script
--  **predi_pitch.R** takes the subset of pitchers and creates a predictive model for each one (**NOTE:** Be advised, this will take upwards of 30 minutes to run)
-- performance.R creates a table that shows the performance of the models
-- kershaw_sequence.R looks at one pitcher and shows sequencing trends throughout the game in different scenarios
-- situation.R allows the manual entry of at-bat scenarios (balls, strikes, etc.) to create a prediction
-- predipitch.Rmd creates the final write-up with visualizations
+* dugout.R (similar to a include.R) loads the necessary libraries and establishes the file path
+*  **import.R** converts the enormous dataset into a more manageable subset of MLB pitchers
+*  **pitchers.R** pre-processes the data so that it is easily fed into the predipitch script
+*  **predi_pitch.R** takes the subset of pitchers and creates a predictive model for each one (**NOTE:** Be advised, this will take upwards of 30 minutes to run)
+* performance.R creates a table that shows the performance of the models
+* kershaw_sequence.R looks at one pitcher and shows sequencing trends throughout the game in different scenarios
+* situation.R allows the manual entry of at-bat scenarios (balls, strikes, etc.) to create a prediction
+* predipitch.Rmd creates the final write-up with visualizations
 
 Due to the size of the datasets at hand, running the scripts in **bold** can take a long time. However, they output .RDs which can referenced directly from the Github so you may skip these scripts and run only the other scripts of interest. Just note, dugout.R should be run in either case. 
 
 Finally, due to the size of datasets, we gitignore all .csv files. You can find some of the data in archive.zip. However, download pitches.zip from one of the links in the appendix to complete your local repository if you wish to use the import.R script.
 
 ## Why Do We Care About What Pitch is Coming?
-### The difference Between Pitch Types
-Not all pitches are made the same. From sliders to cutters to knuckleballs, each pitch tends to have its own characteristics that define it. 
+### The Difference Between Pitch Types
+Not all pitches are made the same. From sliders to cutters to knuckleballs, each pitch tends to have its own characteristics that define it. From the following table, we see just how vastly different each pitch can be. On average we find that fastballs start at almost 94 mph and changeups start at 86 mph, a massive difference considering the pitches are designed to look the exact same to the batter. The average break length of a fastball is about 4 inches, which means the point that a batter sees a fastball leave the pitcher's hand will follow a mostly straight line. Compare that to a curveball with almost 13 inches of break and we start to see why knowing the next pitch can be helpful.
 
 ```{r caption = "Averages of Different Pitch Characteristics", render=lemon_print}
 
@@ -82,7 +82,9 @@ pitch_sum = pitch_sum %>%
 pitch_sum
 ```
 
-From the table, we essentially see the obvious that is pitches are different. On average we find that fastballs start at almost 94 mph and changeups start at 86 mph. The average break length of a fastball is about 4 inches, which is not too bad, the point that a batter sees a fastball leave the pitcher's hand will most likely cross following a straight line. Compare that to a curveball with almost 13 inches of break and we start to see why knowing the next pitch can be helpful.
+The following plots of pitcher Chris Archer's pitches allow us to visualize the differences in each pitch type. For Archer, we see that his slider tends to have a relatively low spin rate, with his fastballs having higher spin rates and his changeups in between. As we would expect, Archer's fastballs have little break. His slider, however, has a large but variable amount of break and always tends to break in the same direction. These visuals help us understand where a pitch may be going. If we can predict the next pitch is a slider, then we can start to understand the direction and magnitude of break in the pitch. 
+
+
 
 ```{r}
 
@@ -108,9 +110,6 @@ ggplot(plot_archer)+
   ggtitle("Break Angle and Length for Chris Archer's Pitches")
 ```
 
-The plots of Chris Archer's pitches give us a glimpse of where one type of pitch becomes another. For Archer, we see that his slider tends to have a relatively low spin rate, with his fastballs having higher spin rates and his changeups in between. As we would expect, Archer's fastballs have little break. His slider however, has a large but variable amount of break and always tends to break in the same direction. These visuals help us understand where a pitch may be going. If we can predict the next pitch is a slider, then we can start to understand the direction and magnitude of break in the pitch. 
-
-
 
 ```{r}
 ggplot(plot_data)+
@@ -124,13 +123,13 @@ ggplot(plot_data)+
   facet_wrap(~pitch_type)
 ```
 
-Mostly as an exposition into our data, we found the graphs of distributions of break length and start speed to be interesting. They provide a more throrough comparison of pitch types because every pitcher is slightly different. Some pitchers may have a lot more movement on their sinker than others. Similarly, Aroldis Chapman throwing 105 mph fastballs is certainly not the norm in the league. Getting to see the variability of break length and speeds begins to paint the picture of why some pitchers are better than others. 
+Mostly as an exploration into our data, we found the graphs of distributions of break length and start speed to be quite interesting. They provide a  thorough comparison of pitch types because every pitcher is slightly different. Some pitchers may have a lot more movement on their sinker than others. Similarly, Aroldis Chapman's legendary 105 mph fastballs are certainly not the norm in the league. Getting to see the variability of break length and speeds begins to paint the picture of why some pitchers are better than others, and why predicting what is coming is so important. 
 
 
 ### The Difference Between Situations
-Naturally, a pitcher will have a generally well established "arsenal" if pitch types that he throws on a regular basis, so a batter will have an idea of types of pitches he is likely to face and the relative frequency at which he will face them. However, by being aware of the game situation, a batter might have a better idea of the type of pitch he is likely to see next. The following section illustrates how this works in practice. 
+Naturally, a pitcher will have a generally well established "arsenal" of pitch types that he throws on a regular basis, so a batter will have an idea of types of pitches he is likely to face and the relative frequency at which he will face them. However, by being aware of the game situation, a batter might have a better idea of the type of pitch he is likely to see next. The following section illustrates how this works in practice. 
 
-The below table lists the distribution of pitch types that Clayton Kershaw throws conditional on a few different game situation. We observe that Kershaw throws about 48% four seam fastballs across all at bats in our data set. However, if we only look at the first pitch, we see that he throws about 68% four seam fastballs. Following fastballs, his frequency of sliders and curves increases significantly. In two strikes situations, he tends to throw a lot of sliders and relied more on his curve relative to other counts. With three balls, Kershaw relies on four seam fastballs and sliders (probably his two most reliable pitches). To the "heart" of the order, or the three and four hitters in the batting order, he ups the frequency of sliders and curves and throws less four seamers. To the bottom of the order (eight and nine hitters), he throws more four seamers. He also throws a lot of fastballs to lefties, probably because lefties hit off left handed pitchers with a lower batting average than righties do. 
+The below table lists the distribution of pitch types that Clayton Kershaw throws conditional on a few different game situations. We observe that Kershaw throws about 48% four seam fastballs across all at bats in our data set. However, if we only look at the first pitch, we see that he throws about 68% four seam fastballs. Following fastballs, his frequency of sliders and curves increases significantly. In two strikes situations, he tends to throw a lot of sliders and relied more on his curve relative to other counts. With three balls, Kershaw relies on four seam fastballs and sliders (probably his two most reliable pitches). To the "heart" of the order, or the three and four hitters in the batting order, he ups the frequency of sliders and curves and throws less four seamers. To the bottom of the order (eight and nine hitters), he throws more four seamers. He also throws a lot of fastballs to lefties, probably because lefties hit off left handed pitchers with a lower batting average than righties do. 
 
 ```{r}
 
