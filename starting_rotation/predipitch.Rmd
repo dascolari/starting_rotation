@@ -53,7 +53,7 @@ Not all pitches are made the same. From sliders to cutters to knuckleballs, each
 pitch_sum = pitches %>%
   filter(pitch_type != "") %>%
   filter(pitch_type != "IN")%>%
-  dplyr::select(pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length,break_y)%>%
+  dplyr::select(pitch_type,px,pz,start_speed,end_speed,spin_rate,spin_dir,break_angle,break_length)%>%
   mutate(pitch_type = as.factor(pitch_type))%>%
   group_by(pitch_type)%>%
   summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
