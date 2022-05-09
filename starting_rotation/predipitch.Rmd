@@ -44,6 +44,24 @@ Second, we aim to make the results of our pitch type predictor accessible to bas
 
 This report proceeds as follows. First we analyze the physical attributes of the pitches that our 30 selected pitchers throw, making the case that it is indeed in the batters best interest to have an idea of how a particular pitch is going to move once it leave the pitcher's hand. Second, we show some evidence that pitchers do adopt different strategies for different game situations. We then describe the rich, pitch level data set we use for this analysis. Finally, we discuss our random forest classifier and the results it produces. 
 
+### Reproducibility
+
+While much of our analysis can be reproduced directly from the RMarkdown file, there are several scripts in our Github that are called at various times. In order to have 100% reproducibility, the following load order can be used:
+
+The following scripts allow the writeup to be reproduced:
+- dugout.R (similar to a include.R) loads the necessary libraries and establishes the file path
+-  **import.R** converts the enormous dataset into a more manageable subset of MLB pitchers
+-  **pitchers.R** pre-processes the data so that it is easily fed into the predipitch script
+-  **predi_pitch.R** takes the subset of pitchers and creates a predictive model for each one (**NOTE:** Be advised, this will take upwards of 30 minutes to run)
+- performance.R creates a table that shows the performance of the models
+- kershaw_sequence.R looks at one pitcher and shows sequencing trends throughout the game in different scenarios
+- situation.R allows the manual entry of at-bat scenarios (balls, strikes, etc.) to create a prediction
+- predipitch.Rmd creates the final write-up with visualizations
+
+Due to the size of the datasets at hand, running the scripts in **bold** can take a long time. However, they output .RDs which can referenced directly from the Github so you may skip these scripts and run only the other scripts of interest. Just note, dugout.R should be run in either case. 
+
+Finally, due to the size of datasets, we gitignore all .csv files. You can find some of the data in archive.zip. However, download pitches.zip from one of the links in the appendix to complete your local repository if you wish to use the import.R script.
+
 ## Why Do We Care About What Pitch is Coming?
 ### The difference Between Pitch Types
 Not all pitches are made the same. From sliders to cutters to knuckleballs, each pitch tends to have its own characteristics that define it. 
@@ -486,3 +504,15 @@ by_pitch_performance_Chris_Sale
 by_pitch_performance_Zack_Greinke
 by_pitch_performance_Yu_Darvish
 ```
+
+## Apendix D
+
+Datasets: Due to the size of datasets in this folder, we gitignore all .csv files. You can find some of the data in archive.zip. However, download pitches.zip from one of the below links to get pitches data:
+
+- data is from here: http://inalitic.com/datasets/mlb%20pitch%20data.html
+- pitchers data dropbox: https://www.dropbox.com/s/9gyz3ujwx7jsh5j/pitches.zip?dl=0
+- data is built from here: https://www.kaggle.com/datasets/pschale/mlb-pitch-data-20152018
+- detailed info on the data: https://docs.google.com/document/d/1ztD20pt5K0HUi2EcJHT4SYdOZw9YPYhtLUmi8BpInuA/edit?pref=2&pli=1#heading=h.mnao9thv84r1
+- hitting here: https://www.baseball-reference.com/leagues/majors/2015-standard-batting.shtml?sr&utm_source=direct&utm_medium=Share&utm_campaign=ShareTool#players_standard_batting
+
+
