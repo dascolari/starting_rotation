@@ -8,7 +8,7 @@ The following scripts allow the writeup to be reproduced:
 - dugout.R (similar to a include.R) loads the necessary libraries and establishes the file path
 -  :warning: import.R converts the enormous dataset into a more manageable subset of MLB pitchers
 -  :warning: pitchers.R pre-processes the data so that it is easily fed into the predipitch script
--  :warning: predi_pitch.R takes the subset of pitchers and creates a predictive model for each one (**NOTE:** This will take upwards of 30 minutes to run, so we highly recommend not running it)
+-  :warning: predi_pitch.R takes the subset of pitchers and creates a predictive model for each one (**NOTE:** Be advised, this will take upwards of 30 minutes to run)
 - performance.R creates a table that shows the performance of the models
 - kershaw_sequence.R looks at one pitcher and shows sequencing trends throughout the game in different scenarios
 - situation.R allows the manual entry of at-bat scenarios (balls, strikes, etc.) to create a prediction
