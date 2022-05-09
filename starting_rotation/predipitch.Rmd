@@ -49,6 +49,7 @@ This report proceeds as follows. First we analyze the physical attributes of the
 While much of our analysis can be reproduced directly from the RMarkdown file, there are several scripts in our Github that are called at various times. In order to have 100% reproducibility, the following load order can be used:
 
 The following scripts allow the writeup to be reproduced:
+
 * dugout.R (similar to a include.R) loads the necessary libraries and establishes the file path
 *  **import.R** converts the enormous dataset into a more manageable subset of MLB pitchers
 *  **pitchers.R** pre-processes the data so that it is easily fed into the predipitch script
@@ -62,9 +63,18 @@ Due to the size of the datasets at hand, running the scripts in **bold** can tak
 
 Finally, due to the size of datasets, we gitignore all .csv files. You can find some of the data in archive.zip. However, download pitches.zip from one of the links in the appendix to complete your local repository if you wish to use the import.R script.
 
+## The Data
+The data involved in this project consists of every pitch from the 2015 through the 2018 Major League Baseball (MLB) seasons. These four seasons contained nearly 3 million observations, and the data include categorization of 16 different types of pitches, the spin, speed, and location of each pitch, the game situation (score, runners on base, balls and strikes, etc.), information about the pitcher and batter, and the result of the at-bat. 
+
+From this data set, we engineer a few important features. Since each pitch is identified by an at bat id and a pitch number, we can add the previous pitch types as features to each pitch. For this model, we add categorical features for the previous two pitches. We also add the previous at bat's result as a feature.
+
+We also add a factor variable indicating the position in the batting order the pitcher is facing. A team's best hitters tend to bat 3rd or 4th in the order, and a team's worst hitter tends to bat 8th and 9th, so batting order may be able to tell our model a lot about what pitch types a pitcher will throw. 
+
+Lastly, we add features for the game specific share of a pitcher's total pitches that each pitch types makes up. This set of features is meant to capture the fact that a pitcher's arsenal of pitch types may change from game to game. Most games a pitcher might throw mostly four seam fastballs, but there might be game specific "fixed effects" that lead him to rely more on his secondary pitches. We'd like our model to be able to use this information in making its predictions.
+
 ## Why Do We Care About What Pitch is Coming?
 ### The Difference Between Pitch Types
-Not all pitches are made the same. From sliders to cutters to knuckleballs, each pitch tends to have its own characteristics that define it. From the following table, we see just how vastly different each pitch can be. On average we find that fastballs start at almost 94 mph and changeups start at 86 mph, a massive difference considering the pitches are designed to look the exact same to the batter. The average break length of a fastball is about 4 inches, which means the point that a batter sees a fastball leave the pitcher's hand will follow a mostly straight line. Compare that to a curveball with almost 13 inches of break and we start to see why knowing the next pitch can be helpful.
+Not all pitches are made the same. From sliders to cutters to knuckleballs, each pitch tends to have its own characteristics that define it (see Appendix E for a list of pitch type acronyms). From the following table, we see just how vastly different each pitch can be. On average we find that fastballs start at almost 94 mph and changeups start at 86 mph, a massive difference considering the pitches are designed to look the exact same to the batter. The average break length of a fastball is about 4 inches, which means the point that a batter sees a fastball leave the pitcher's hand will follow a mostly straight line. Compare that to a curveball with almost 13 inches of break and we start to see why knowing the next pitch can be helpful.
 
 ```{r caption = "Averages of Different Pitch Characteristics", render=lemon_print}
 
@@ -123,7 +133,7 @@ ggplot(plot_data)+
   facet_wrap(~pitch_type)
 ```
 
-Mostly as an exploration into our data, we found the graphs of distributions of break length and start speed to be quite interesting. They provide a  thorough comparison of pitch types because every pitcher is slightly different. Some pitchers may have a lot more movement on their sinker than others. Similarly, Aroldis Chapman's legendary 105 mph fastballs are certainly not the norm in the league. Getting to see the variability of break length and speeds begins to paint the picture of why some pitchers are better than others, and why predicting what is coming is so important. 
+Mostly as an exploration into our data, we found the graphs of distributions of break length and start speed to be quite interesting. They provide a  thorough comparison of pitch types because every pitcher is slightly different. Some pitchers may have a lot more movement on their sinker than others. Similarly, Aroldis Chapman's legendary 105 mph fastballs are certainly not the norm in the league.  In Appendix B, we present the pitching profiles of the 30 pitchers based on the style of their pitches and the frequency that they are thrown. Getting to see the variability of break length and speeds begins to paint the picture of why some pitchers are better than others, and why predicting what is coming is so important. 
 
 
 ### The Difference Between Situations
@@ -146,18 +156,10 @@ just_walked
 
 ```
 
-## The Data
-The data involved in this project consists of every pitch from the 2015 through the 2018 Major League Baseball (MLB) seasons. These four seasons contained nearly 3 million observations, and the data include categorization of 16 different types of pitches, the spin, speed, and location of each pitch, the game situation (score, runners on base, balls and strikes, etc.), information about the pitcher and batter, and the result of the at-bat. 
-
-From this data set, we engineer a few important features. Since each pitch is identified by an at bat id and a pitch number, we can add the previous pitch types as features to each pitch. For this model, we add categorical features for the previous two pitches. We also add the previous at bat's result as a feature.
-
-Although information on each batter might be helpful for this modeling problem, we did not have easy access to this kind of hitter data. As an alternative, we add a factor variable indicating the position in the batting order the pitcher is facing. A team's best hitters tend to bat 3rd or 4th in the order, and a team's worst hitter tends to bat 8th and 9th, so batting order may be able to tell our model a lot about what pitch types a pitcher will throw. 
-
-Lastly, we add features for the game specific share of a pitcher's total pitches that each pitch types makes up. This set of features is meant to capture the fact that a pitcher's arsenal of pitch types may change from game to game. Most games a pitcher might throw mostly four seam fastballs, but there might be game specific "fixed effects" that lead him to rely more on his secondary pitches. We'd like our model to be able to use this information in making its predictions.
 
 ## Methodology
 
-Given how difficult it is to get hits consistently at the major league level, having an idea an idea of what the opposing pitcher is about to throw would confer a significant advantage to the hitter. We endeavor to create a model that successfully predicts the next pitch a pitcher will throw in an at-bat, given the circumstances of the at-bat, the tendencies of the pitcher, and the progress of the game up to that point. Using three distinct random forest models, we derive a predictive approach that generally outperforms guessing that the pitcher will throw their most common pitch (often called "sitting on a pitch"), and in most cases, significantly exceeds this "sitting on a pitch" approach.
+Given that we've established how difficult it is to get hits consistently at the major league level, having an idea an idea of what the opposing pitcher is about to throw would confer a significant advantage to the hitter. We endeavor to create a model that successfully predicts the next pitch a pitcher will throw in an at-bat, given the circumstances of the at-bat, the tendencies of the pitcher, and the progress of the game up to that point. Using three distinct random forest models, we derive a predictive approach that generally outperforms guessing that the pitcher will throw their most common pitch (often called "sitting on a pitch"), and in most cases, significantly exceeds this "sitting on a pitch" approach.
 
 The models are generated with a train/test split and then evaluated for the out-of-sample performance against the testing set. Models are generated per pitcher, in such a way that be beneficial in application to a baseball manager or hitter, given the situation in the game. 
 
@@ -234,11 +236,13 @@ Hernandez is a pitcher with a diverse arsenal of pitches. As one can see, the pr
 
 #### The Lagged Model
 
+
 The second random forest builds upon the features selected in the Situational Model and supplements them with information about the previous two pitches and the event the last at-bat. This allows for the model to incorporate lagged information that might directly influence the next pitch. Did the pitcher just give up a home run on the curve? Maybe it's a steady diet of fastballs from here on out. Did the pitcher just give the batter two straight fastballs to study? Perhaps it's time for an off-speed pitch like a change-up. 
 
 #### Trash Can Model
 
-The third and final random forest uses nearly every feature from the dataset to control for all possible scenarios and variations in the feature matrix. This means that it not only considers all the factors included in the other two models, but also includes what the pitcher's game has looked like so far; that is, it takes into account the pitch choices as a percent of the overall pitches in the game up to that point. (Is this a correct reading?) So if the pitcher is leaning heavily on the slider that day, this model will incorporate that pattern. 
+
+The third and final random forest uses nearly every feature from the dataset to control for all possible scenarios and variations in the feature matrix. This means that it not only considers all the factors included in the other two models, but also includes what the pitcher's game has looked like so far; that is, it takes into account the pitch choices as a percent of the overall pitches in the game up to that point. Therefore, if the pitcher is leaning heavily on the slider that day, for example, this model will incorporate that pattern. 
 
 ### Pitch Prediction
 
@@ -303,13 +307,14 @@ pitcher_predi$pitchhat_trashcan = factor(pitcher_predi$pitchhat_trashcan, factor
   situation <- merge(pitcher_guess, pitcher_real)
 
   situation <-situation %>% 
-    arrange(desc(percent))
+    arrange(desc(percent)) %>% 
+    kable(caption = "Pitch Prediction for Kershaw with 1 Ball, 1 Strike, 1 Out")
   
-situation  
+situation 
 
 ```
 
-The model says that there's about a third chance that he will throw a slider, a third chance he will throw a fastball, and a third chance he will throw a curveball. Obviously, this is a difficult predicament for a hitter, but the model itself did pretty well! We slightly overpredict the chance of a slider and a fastball, and slightly underpredict the curveball. 
+The model says that there's about a third chance that he will throw a slider, a third chance he will throw a fastball, and a third chance he will throw a curveball. Obviously, this is a difficult predicament for a hitter, but the model itself did pretty well! We slightly overpredict the chance of a slider and a fastball, and slightly underpredict the curveball, but our distribution is largely the same. 
 
 What if we change the situation again? Now say it's the first pitch of an at-bat with two outs against a lefty. 
 
@@ -372,19 +377,20 @@ pitcher_predi$pitchhat_trashcan = factor(pitcher_predi$pitchhat_trashcan, factor
   situation <- merge(pitcher_guess, pitcher_real)
 
   situation <-situation %>% 
-    arrange(desc(percent))
+    arrange(desc(percent)) %>% 
+    kable(caption = "Pitch Prediction for Kershaw with Two Outs Against a Left-handed Batter")
   
 situation  
 
 ```
 
-Recall that we saw that Kershaw loves to throw a fastball on the first pitch, and indeed our model predicts that (at a slightly higher rate than is actually observed.) So if you are a left-handed hitter coming into the first pitch of an at-bat, it's probably a good idea to look for a fastball.
+Recall that we saw that Kershaw loves to throw a fastball on the first pitch, and indeed our model predicts that (at a slightly higher rate than is actually observed.) So if you are a left-handed hitter coming into the first pitch of an at-bat, it's probably a good idea to look for a fastball. Notice, however, that just because our distribution generally matches 
 
-These predictions can be generated for any pitcher, and we invite you to explore in-game situations with our pitchers in the Shiny app (link here?). 
+These predictions can be generated for any pitcher, and we invite you to explore in-game situations with our pitchers in the Shiny app found here: https://hsnell-6.shinyapps.io/DataMiningProject_PitchPrediction/ 
 
 ## Results
 
-In [TABLE/APPENDIX], we publish our models' results for 30 pitchers from Major League Baseball. These pitchers are generally considered some of the best in the business, but there are some pitchers from outside the top tier for completeness. We also note that the model is easily adaptable to any pitcher who threw between 2015 and 2018. In [TABLE/APPENDIX], we present the pitching profiles of the 30 pitchers based on the style of their pitches and the frequency that they are thrown.
+In [TABLE/APPENDIX], we publish our models' results for 30 pitchers from Major League Baseball. These pitchers are generally considered some of the best in the business, but there are some pitchers from outside the top tier for completeness. We also note that the model is easily adaptable to any pitcher who threw between 2015 and 2018.
 
 ```{r}
 
@@ -462,13 +468,13 @@ types_Zack_Greinke
 types_Yu_Darvish
 ```
 
-## Apendix B
+## Appendix B
 
 ```{r tables, include=TRUE}
 overall_performance_all
 ```
 
-## Apendix C
+## Appendix C
 
 ```{r}
 by_pitch_performance_Trevor_Rosenthal
@@ -503,7 +509,7 @@ by_pitch_performance_Zack_Greinke
 by_pitch_performance_Yu_Darvish
 ```
 
-## Apendix D
+## Appendix D
 
 Datasets: Due to the size of datasets in this folder, we gitignore all .csv files. You can find some of the data in archive.zip. However, download pitches.zip from one of the below links to get pitches data:
 
@@ -513,4 +519,24 @@ Datasets: Due to the size of datasets in this folder, we gitignore all .csv file
 - detailed info on the data: https://docs.google.com/document/d/1ztD20pt5K0HUi2EcJHT4SYdOZw9YPYhtLUmi8BpInuA/edit?pref=2&pli=1#heading=h.mnao9thv84r1
 - hitting here: https://www.baseball-reference.com/leagues/majors/2015-standard-batting.shtml?sr&utm_source=direct&utm_medium=Share&utm_campaign=ShareTool#players_standard_batting
 
+## Appendix E
+
+Glossary of Pitch Types:
+
+CH = Changeup
+CU = Curveball
+EP = Eephus
+FA = Fastball
+FC = Cutter
+FF = Four seam Fastball
+FS = Splitter
+FT = Two seam Fastball
+FO = Forkball
+IN = Intent ball
+KC = Knuckle ball Curve
+KN = Knuckle ball
+PO = Pitch Out
+SC = Screwball
+SI = Sinker
+SL = Slider
 
