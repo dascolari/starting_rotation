@@ -33,6 +33,9 @@ load(file.path(path, "output", "pitches_import.RData"))
 
 ```
 
+## Abstract
+Using three random forest classifiers, we predict pitch types of 30 different pitchers using pitch level data from the 2015-2018 MLB seasons. The models build upon each other, rolling out additional sets of features derived from the game's situation, previous pitches and at bat results, and game specific pitch distributions for each pitcher. For most pitchers, all three predictive models outperform a baseline model that guesses the pitcher's most frequently thrown pitch. Our project aims to contribute to the baseball world first by providing a framework for MLB clubs to build scouting reports on opposing pitchers, and second by augmenting fans' viewing experience with a user friendly web application that queries out model's predictions. 
+
 ## Introduction
 Hitting a baseball has been shown to be one of the most difficult tasks in all of sports. Anybody who has gone to a batting cage and tried the fastest machine for fun knows how hard it can be to hit a normal fastball. That does not even include the possibilities of breaking balls and off-speed pitches. Batters have a fraction of a fraction of a second to recognize a pitch, determine if that pitch will be a ball or a strike, and set their swing into motion. Considering the human body can only move so fast to get the bat over the plate, the batter has to make their decision moments after the ball leaves the pitcher's hand. To give themselves the best chance of making good contact, professional baseball players will often attempt to predict whether a changeup, fastball, or a curveball is coming before the ball leaves the pitcher's hand.
 
