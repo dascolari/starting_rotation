@@ -54,8 +54,11 @@ overall_performance_all <- foreach(id = 1:30, .combine = rbind) %do% {
     summarise(rate_trashcan1 = round(sum(success_trashcan1)/length(pitch_type),3), 
               rate_trashcan2 = round(sum(success_trashcan2)/length(pitch_type),3), 
               rate_trashcan3 = round(sum(success_trashcan3)/length(pitch_type),3)) %>% 
-    arrange(pitch_type) %>% 
-    kable(caption = bp)
+    arrange(pitch_type) 
+  
+  colnames(by_pitch_performance) <- c("Pitch Type", "Situation", "Lagged", "Trashcan")
+
+  by_pitch_performance <- kable(by_pitch_performance, caption = bp)
   
   # create strings for naming tables according to loop index
   bypitch <- paste("by_pitch_performance", pitcher_first, pitcher_last, sep = "_")
