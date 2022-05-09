@@ -389,7 +389,47 @@ situation
 
 ```
 
-Recall that we saw that Kershaw loves to throw a fastball on the first pitch, and indeed our model predicts that (at a slightly higher rate than is actually observed.) So if you are a left-handed hitter coming into the first pitch of an at-bat, it's probably a good idea to look for a fastball. Notice, however, that just because our distribution generally matches 
+Recall that we saw that Kershaw loves to throw a fastball on the first pitch, and indeed our model predicts that (at a slightly higher rate than is actually observed.) So if you are a left-handed hitter coming into the first pitch of an at-bat, it's probably a good idea to look for a fastball. 
+
+Notice, however, that just because our distribution generally matches the true distribution of the pitches, we aren't getting everything exactly right. The following confusion matrix shows that we are failing to predict the true pitch given a real in-game situation. While we get quite a bit right, one can see where we swing and miss on the off-diagonal. 
+
+```{r}
+
+# Enter the specific pitcher
+
+id = 12
+
+# Call the pitcher's dataset 
+
+load(file.path(path, "output", "pitches_import.RData"))
+
+fname_model <- paste0("trashcans", id, ".RData")
+load(file = file.path(path, 'output', 'models', fname_model))
+
+fname_pitcher <- paste0("pitcher", id, ".Rds")
+load(file = file.path(path, 'output', 'pitchers', fname_pitcher))
+
+fname_factor <- paste0("pitcher_factor", id, ".RDs")
+load(file = file.path(path, 'output', 'pitchers', fname_factor))
+
+pitcher_first <- names$first_name[id]
+pitcher_last <- names$last_name[id]
+
+# affix the model prediction results to the pitches dataset
+
+pitcher$pitch_type <- factor(pitcher$pitch_type, factor_types)
+pitcher_predi <- pitcher %>% 
+  mutate(pitchhat_trashcan = predict(trashcan_3, pitcher))
+pitcher_predi$pitchhat_trashcan = factor(pitcher_predi$pitchhat_trashcan, factor_types)
+
+
+# Make a table of classification errors
+confusion <- xtabs(~pitch_type + pitchhat_trashcan, data=pitcher_predi) 
+confusion 
+  
+
+
+```
 
 These predictions can be generated for any pitcher, and we invite you to explore in-game situations with our pitchers in the Shiny app found here: https://hsnell-6.shinyapps.io/DataMiningProject_PitchPrediction/ 
 
