@@ -1,27 +1,13 @@
 library(here)
-here::i_am("code/dugout.R")
-path <- here()
+library(shiny)
+library(tidyverse)
+#here::i_am("code/dugout.R")
+#path <- here()
 
-source(file.path(path, 'code', 'dugout.R'))
 
-load(file = file.path(path, 'output', 'tables', "overall_performance_all.RDs"))
 
-id = 1
-
-foreach(id = 1:30) %do% {
-  # make filenames according to loop index
-  fname_type <- paste0("types", id, ".RDs")
-  fname_zones <- paste0("zones", id, ".RDs")
-  fname_bypitch <- paste0("by_pitch_performance", id, ".RDs")
-  
-  # load table outputs according to loop index
-  load(file = file.path(path, 'output', 'tables', fname_type))
-  load(file = file.path(path, 'output', 'tables', fname_zones))
-  load(file = file.path(path, 'output', 'tables', fname_bypitch))
-}
-
-player_names <- read.csv(file.path(path, "data","raw","archive","archive","player_names.csv"))
-load(file.path(path, "output", "pitches_import.RData"))
+player_names <- read.csv("player_names.csv")
+load("output/pitches_import.RData")
 
 name_list = c(453562,506433,519455,518516,519242,446372,456034,
               544931,453286,433587,477132,594798,502042,425844,
@@ -117,13 +103,13 @@ server <- function(input, output) {
     id = as.numeric(choice[1,1])
     
     fname_model <- paste0("trashcans", id, ".RData")
-    load(file = file.path(path, 'output', 'models', fname_model))
+    load(file = file.path('output', 'models', fname_model))
     
     fname_pitcher <- paste0("pitcher", id, ".Rds")
-    load(file = file.path(path, 'output', 'pitchers', fname_pitcher))
+    load(file = file.path('output', 'pitchers', fname_pitcher))
     
     fname_factor <- paste0("pitcher_factor", id, ".RDs")
-    load(file = file.path(path, 'output', 'pitchers', fname_factor))
+    load(file = file.path('output', 'pitchers', fname_factor))
     
     pitcher_first <- choice$first_name[1]
     pitcher_last <- names$last_name[1]
@@ -165,7 +151,7 @@ server <- function(input, output) {
       }
     }
     else {
-      print("No specified situation")
+      sit_data
     }
     
     pitcher_guess <- sit_data %>% 

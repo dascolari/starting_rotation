@@ -1,6 +1,6 @@
 load(file.path(path, "output", "pitches_import.RData"))
 
-id = 13
+id = 11
 stance = "R"
 strikes = 0
 balls = 0

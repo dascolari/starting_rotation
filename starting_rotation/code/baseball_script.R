@@ -192,6 +192,16 @@ test = pitch_ab_2015 %>%
 
 as.data.frame(types_Jake_Arrieta)
 
+pitch_chap = pitches %>%
+  filter(pitcher_id == 477132)%>%
+  filter(b_count == 3)%>%
+  filter(s_count == 2)%>%
+  filter(outs == 0)%>%
+  filter(stand =="R")
+
+pitcher_result <- pitches %>%
+  filter(pitcher_id == 547973)%>%
+  filter(stand == "R", s_count == 0, b_count == 0, outs == 0)
 
 write.csv(starters, "first_lineup.csv", row.names = FALSE)
 
@@ -352,6 +362,24 @@ by_pitch_performance_Trevor_Rosenthal
 
 
 player_names <- read.csv(file.path(path, "data","raw","archive","archive","player_names.csv"))
+
+#load(file = file.path(path, 'output', 'tables', "overall_performance_all.RDs"))
+
+#id = 1
+
+#foreach(id = 1:30) %do% {
+# make filenames according to loop index
+#  fname_type <- paste0("types", id, ".RDs")
+#  fname_zones <- paste0("zones", id, ".RDs")
+#  fname_bypitch <- paste0("by_pitch_performance", id, ".RDs")
+
+# load table outputs according to loop index
+#  load(file = file.path(path, 'output', 'tables', fname_type))
+#  load(file = file.path(path, 'output', 'tables', fname_zones))
+#  load(file = file.path(path, 'output', 'tables', fname_bypitch))
+#}
+
+
 
 
 #### Markdown Code

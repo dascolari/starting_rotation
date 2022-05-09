@@ -1,0 +1,14 @@
+name: DataMiningProject_PitchPrediction
+title: DataMiningProject_PitchPrediction
+username:
+account: hsnell-6
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6259964
+bundleId: 5884497
+url: https://hsnell-6.shinyapps.io/DataMiningProject_PitchPrediction/
+when: 1652051048.38845
+lastSyncTime: 1652051048.38845
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: shiny_rmd.Rmd
