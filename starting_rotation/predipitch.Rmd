@@ -410,17 +410,16 @@ However, whether this trade off is a good one depends on a batter's hitting appr
 
 Finally, we note that predictive power does not necessarily equate to hits. Enter Zack Britton, who led the league in saves during the 2016 season. Britton is nearly a one-pitch pitcher, throwing sinkers on 89.7% of his pitches. The Game Fixed Effects model improves this prediction a few fractions of a percent, but in either case, it's fair to say that most hitters know exactly what Britton is about to throw. Nevertheless, Britton put up an otherworldly 0.54 ERA in 2016! That is to say, even if batters knew with near perfect clairvoyance a that sinker was on its way, making contact that leads to a hit is a whole other matter. 
 
-## what it all means, probably nothing 
+## Conclusion
 
-implications for how hitters should approach thinking about predicting pitches. 
-What it all means: 
-- we've demonstrated that the game situation, previous pitches, previous result, batting order position, and game to game changes in a pitcher's "stuff" all help predict pitches
-- for some pitcher, all of these features are helpful. for others, using all of the features over fits
-- this modelling is not dierrctly useful to teams on a pitch to pitch level. it'd probably be considered cheating for an assistant coach to be sitting in the dugout with laptop inputting the situation and having the model spit back predictions. Baseball has already shown it is uncomfortable with certain levels of technology entering the game, adding machine learning would be overstepping no doubt. 
-- rather, what we've provided is a framework for hitters to analyze what kind of information is helpful in predicting a particular pitcher's pitch type. They can focus on the information that is important and ignore the rest. this will help them in building scouting reports on pitchers
-- as the Astros showed us all in 2017?, this is crucial
+Using a random forest classifier, we predict pitch types of 30 different pitchers using pitch level data from the 2015-2018 MLB seasons. Over our three models, we progressively roll out sets of features that reflect game situations, previous pitches and results, and game specific pitch distributions. Among the 30 pitchers, some are modeled with greater accuracy with each addition of features. Others improve with the addition of "situation" and "lagged" features but seem to be over fit by the game specific pitch distribution features. For others, all of our random forests are out performed by a model that only guesses their most frequently thrown pitch.
 
-(gonna try to make this coherent)
+A theme we find in our results is that the ability of our models to predict these pitchers' pitch types does not necessarily indicate that hitters will have success in facing them. Zack Britton illustrates this well, as he is highly predictable, yet still performs well in the MLB. 
+
+Our models provide a framework for MLB clubs to build scouting reports on opposing pitchers. By filtering our predictions by situation, teams can obtain predicted pitch distributions for pivotal game situations as they see fit. Additionally, by analyzing how the different sets of features perform, a team's hitters can get a sense of which information, situational, pitch and result history, or game to game fluctuations on a pitcher's arsenal, are relevant pieces of information to consider in their in game, mental calculus of prediction pitches. 
+
+Beyond tools for professional teams, our models are designed to be useful for fans as well 
+
 Moreover: 
 - where our work might be useful on a pitch to pitch basis is with fan enjoyment experience. baseball has lost popularity in recent years, with Tv ratings on the decline and game attendance faltering as well. Surely, this decrease is due to the games slow pace and lack of entertainment value for the casual fan. after all, the game grinds to a halt after each pitch, pausing for players and coaches to relay signs, adjust equipment, and mentally prepare for the next pitch
 
