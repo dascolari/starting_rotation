@@ -96,7 +96,7 @@ The following plots of pitcher Chris Archer's pitches allow us to visualize the 
 
 
 
-```{r}
+```{r fig.height = 4}
 
 plot_data = pitches %>%
   filter(pitch_type != "") %>%
@@ -114,18 +114,23 @@ plot_archer = plot_data%>%
 ggplot(plot_archer)+
   geom_point(aes(x=spin_rate,y=spin_dir,color=pitch_type),alpha=.2)+
   ggtitle("Spin Rate and Direction for Chris Archer's Pitches")
+```
 
+```{r fig.height = 4}
 ggplot(plot_archer)+
   geom_point(aes(x=break_angle,y=break_length,color=pitch_type),alpha=.2)+
   ggtitle("Break Angle and Length for Chris Archer's Pitches")
 ```
 
 
-```{r}
+```{r fig.height = 4}
 ggplot(plot_data)+
   geom_density(aes(x=start_speed), fill="blue")+
   ggtitle("Distribution of Start Speeds across Pitches")+
   facet_wrap(~pitch_type)
+```
+
+```{r fig.height = 4}
 
 ggplot(plot_data)+
   geom_density(aes(x=break_length), fill="red")+
