@@ -73,7 +73,11 @@ overall_performance_all <- foreach(id = 1:30, .combine = rbind) %do% {
   
   cbind(pitcher_last, pitcher_first, overall_performance)
 } %>%
-  arrange(pitcher_last) %>% 
-  kable(caption = "Overall Performance")
+  arrange(pitcher_last) 
+
+colnames(overall_performance_all) <- c("Last Name", "First Name", "Sit One", "Situation", "Lagged", "Trashcan")
+
+overall_performance_all <- kable(overall_performance_all, 
+                                 caption = "Overall Performance")
 
 save(file = file.path(path, 'output', 'tables', "overall_performance_all.RDs"), list = 'overall_performance_all')
